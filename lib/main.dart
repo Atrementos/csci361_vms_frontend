@@ -1,16 +1,21 @@
-import 'package:csci361_vms_frontend/pages/login.dart';
+import 'package:csci361_vms_frontend/pages/main_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final theme = ThemeData(
+final theme = ThemeData.dark().copyWith(
   useMaterial3: true,
   textTheme: GoogleFonts.robotoTextTheme(),
-  colorScheme:
-      ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 57, 131)),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color.fromARGB(255, 255, 151, 151),
+    brightness: Brightness.dark,
+    surface: const Color.fromARGB(255, 76, 45, 45),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 102, 60, 60),
 );
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vehicle Management System',
       theme: theme,
-      home: const LoginPage(),
+      home: const MainPage(),
     );
   }
 }
