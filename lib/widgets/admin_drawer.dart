@@ -1,5 +1,5 @@
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
-import 'package:csci361_vms_frontend/pages/vehicle_assignment_page.dart';
+import 'package:csci361_vms_frontend/pages/drivers_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';

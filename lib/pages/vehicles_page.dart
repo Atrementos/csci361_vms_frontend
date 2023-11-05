@@ -41,10 +41,26 @@ class _VehiclesPageState extends State<VehiclesPage> {
               child: Expanded(
                 child: Column(
                   children: [
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        label: Text('License Plate'),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              label: Text('License Plate'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              label: Text('Type'),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     TextFormField(
                       decoration: const InputDecoration(
@@ -54,6 +70,18 @@ class _VehiclesPageState extends State<VehiclesPage> {
                     Row(
                       children: [
                         Expanded(
+                          flex: 5,
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              label: Text('Make'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          flex: 2,
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
@@ -65,10 +93,11 @@ class _VehiclesPageState extends State<VehiclesPage> {
                           width: 12,
                         ),
                         Expanded(
+                          flex: 2,
                           child: TextFormField(
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                              label: Text('Sitting Capacity'),
+                              label: Text('Capacity'),
                             ),
                           ),
                         ),
