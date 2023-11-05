@@ -1,9 +1,14 @@
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 
-class VehicleAssignmentPage extends StatelessWidget {
-  const VehicleAssignmentPage({super.key});
+class DriversPage extends StatefulWidget {
+  const DriversPage({super.key});
 
+  @override
+  State<DriversPage> createState() => _DriversPageState();
+}
+
+class _DriversPageState extends State<DriversPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,6 +1,6 @@
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicle_assignment_page.dart';
-import 'package:csci361_vms_frontend/pages/vehicle_registration_page.dart';
+import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,19 +74,15 @@ class AdminDrawer extends ConsumerWidget {
                 ),
           ),
           DrawerTile(
-            title: 'Register a vehicle',
+            title: 'Vehicles',
             switchPage: () {
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(const VehicleRegistrationPage());
+              ref.read(pageProvider.notifier).setPage(const VehiclesPage());
             },
           ),
           DrawerTile(
-            title: 'Assign a vehicle to driver',
+            title: 'Drivers',
             switchPage: () {
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(const VehicleAssignmentPage());
+              ref.read(pageProvider.notifier).setPage(const DriversPage());
             },
           ),
         ],
