@@ -104,7 +104,7 @@ class _VehiclesPageState extends State<VehiclesPage> {
                       ],
                     ),
                     const SizedBox(
-                      height: 12,
+                      height: 8,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
