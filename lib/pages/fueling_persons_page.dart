@@ -2,24 +2,26 @@ import 'package:csci361_vms_frontend/models/user.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 
-class DriversPage extends StatefulWidget {
-  const DriversPage({super.key});
+class FuelingPersonsPage extends StatefulWidget {
+  const FuelingPersonsPage({super.key});
 
   @override
-  State<DriversPage> createState() => _DriversPageState();
+  State<FuelingPersonsPage> createState() {
+    return _FuelingPersonsPageState();
+  }
 }
 
-class _DriversPageState extends State<DriversPage> {
-  List<Driver> _registeredDrivers = [];
+class _FuelingPersonsPageState extends State<FuelingPersonsPage> {
   final _formKey = GlobalKey<FormState>();
+  List<FuelingPerson> _registeredFuelingPersons = [];
 
-  void _addDriver() {}
+  void _addFuelingPerson() {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Drivers Page'),
+        title: const Text('Fueling Persons Page'),
       ),
       body: Column(
         children: [
@@ -27,7 +29,7 @@ class _DriversPageState extends State<DriversPage> {
             height: 6,
           ),
           Text(
-            'Add a new driver here',
+            'Add a new fueling person here',
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
@@ -141,7 +143,7 @@ class _DriversPageState extends State<DriversPage> {
                           child: const Text('Reset'),
                         ),
                         ElevatedButton(
-                          onPressed: _addDriver,
+                          onPressed: _addFuelingPerson,
                           child: const Text('Add'),
                         ),
                       ],
@@ -153,7 +155,7 @@ class _DriversPageState extends State<DriversPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _registeredDrivers.length,
+              itemCount: _registeredFuelingPersons.length,
               itemBuilder: (context, index) {
                 return const Row(
                   children: [

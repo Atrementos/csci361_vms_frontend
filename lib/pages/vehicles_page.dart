@@ -1,6 +1,7 @@
 import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:csci361_vms_frontend/data/dummy_vehicles.dart';
 
 class VehiclesPage extends StatefulWidget {
   const VehiclesPage({super.key});
@@ -10,7 +11,7 @@ class VehiclesPage extends StatefulWidget {
 }
 
 class _VehiclesPageState extends State<VehiclesPage> {
-  List<Vehicle> _registeredVehicles = [];
+  final List<Vehicle> _registeredVehicles = dummyVehicles;
   final _formKey = GlobalKey<FormState>();
 
   void _addVehicle() {
@@ -130,13 +131,22 @@ class _VehiclesPageState extends State<VehiclesPage> {
             child: ListView.builder(
               itemCount: _registeredVehicles.length,
               itemBuilder: (context, index) {
-                return const Row(
-                  children: [
-                    Text('Vehicle license plate'),
-                    Text('Vehicle model'),
-                    Text('Vehicle year')
-                  ],
+                return ListTile(
+                  leading: Text(
+                    _registeredVehicles[index].licensePlate,
+                  ),
+                  title: Text(
+                    '${_registeredVehicles[index].make}, ${_registeredVehicles[index].model}, ${_registeredVehicles[index].year}',
+                  ),
+                  trailing: const Icon(Icons.arrow_outward),
                 );
+                // const Row(
+                //   children: [
+                //     Text('Vehicle license plate'),
+                //     Text('Vehicle model'),
+                //     Text('Vehicle year')
+                //   ],
+                // );
               },
             ),
           ),

@@ -8,11 +8,22 @@ class LoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final _formKey = GlobalKey<FormState>();
+    // String _enteredUsername;
+    // String _enteredPassword;
+
+    void _authorize() {
+      if (_formKey.currentState!.validate()) {
+        // TODO (Successful authorization -> switch page?)
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
       ),
       body: Form(
+        key: _formKey,
         child: Padding(
           padding: const EdgeInsets.only(
             left: 40,

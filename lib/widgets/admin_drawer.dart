@@ -1,3 +1,4 @@
+import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/drivers_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
@@ -67,12 +68,6 @@ class AdminDrawer extends ConsumerWidget {
               //   ],
               // ),
               ),
-          Text(
-            'Vehicle',
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-          ),
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
@@ -83,6 +78,14 @@ class AdminDrawer extends ConsumerWidget {
             title: 'Drivers',
             switchPage: () {
               ref.read(pageProvider.notifier).setPage(const DriversPage());
+            },
+          ),
+          DrawerTile(
+            title: 'Fueling persons',
+            switchPage: () {
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(const FuelingPersonsPage());
             },
           ),
         ],

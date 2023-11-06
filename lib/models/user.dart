@@ -51,3 +51,18 @@ class Driver extends User {
     required super.password,
   });
 }
+
+class FuelingPerson extends User {
+  final int fuelingPersonId;
+
+  FuelingPerson({
+    required this.fuelingPersonId,
+    required super.govId,
+    required super.name,
+    required super.lastName,
+    required super.phoneNumber,
+    required super.role,
+    required super.email,
+    required super.password,
+  });
+}
