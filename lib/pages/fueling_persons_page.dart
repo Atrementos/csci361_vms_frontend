@@ -1,4 +1,6 @@
+import 'package:csci361_vms_frontend/data/dummy_fueling_persons.dart';
 import 'package:csci361_vms_frontend/models/user.dart';
+import 'package:csci361_vms_frontend/pages/fueling_person_details_page.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +15,7 @@ class FuelingPersonsPage extends StatefulWidget {
 
 class _FuelingPersonsPageState extends State<FuelingPersonsPage> {
   final _formKey = GlobalKey<FormState>();
-  List<FuelingPerson> _registeredFuelingPersons = [];
+  List<FuelingPerson> _registeredFuelingPersons = dummyFuelingPersons;
 
   void _addFuelingPerson() {}
 
@@ -157,12 +159,24 @@ class _FuelingPersonsPageState extends State<FuelingPersonsPage> {
             child: ListView.builder(
               itemCount: _registeredFuelingPersons.length,
               itemBuilder: (context, index) {
-                return const Row(
-                  children: [
-                    Text('Driver name'),
-                    Text('Driver last name'),
-                    Text('Driver ID')
-                  ],
+                return ListTile(
+                  leading: Text(
+                    '${_registeredFuelingPersons[index].fuelingPersonId}',
+                  ),
+                  title: Text(
+                    '${_registeredFuelingPersons[index].name}, ${_registeredFuelingPersons[index].lastName}',
+                  ),
+                  trailing: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (ctx) => FuelingPersonDetailsPage(
+                              fuelingPerson: _registeredFuelingPersons[index]),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_outward),
+                  ),
                 );
               },
             ),
