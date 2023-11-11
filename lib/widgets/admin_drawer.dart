@@ -72,7 +72,7 @@ class AdminDrawer extends ConsumerWidget {
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
-              ref.read(pageProvider.notifier).setPage(const VehiclesPage());
+              ref.read(pageProvider.notifier).setPage(VehiclesPage());
             },
           ),
           DrawerTile(

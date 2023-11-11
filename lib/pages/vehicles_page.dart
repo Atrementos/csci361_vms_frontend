@@ -1,16 +1,14 @@
 import 'package:csci361_vms_frontend/models/vehicle.dart';
+import 'package:csci361_vms_frontend/pages/map_page.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
+import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:csci361_vms_frontend/data/dummy_vehicles.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class VehiclesPage extends StatefulWidget {
-  const VehiclesPage({super.key});
+class VehiclesPage extends ConsumerWidget {
+  VehiclesPage({super.key});
 
-  @override
-  State<VehiclesPage> createState() => _VehiclesPageState();
-}
-
-class _VehiclesPageState extends State<VehiclesPage> {
   final List<Vehicle> _registeredVehicles = dummyVehicles;
   final _formKey = GlobalKey<FormState>();
 
@@ -19,13 +17,24 @@ class _VehiclesPageState extends State<VehiclesPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehicles Page'),
       ),
       body: Column(
         children: [
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(pageProvider.notifier).setPage(MyMapp());
+                },
+                child: const Text('View All Vehicles'),
+              ),
+            ],
+          ),
           const SizedBox(
             height: 6,
           ),
