@@ -1,4 +1,5 @@
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
+import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
