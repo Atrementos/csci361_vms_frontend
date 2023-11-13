@@ -2,6 +2,7 @@ import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/drivers_page.dart';
 import 'package:csci361_vms_frontend/pages/search_all_page.dart';
+import 'package:csci361_vms_frontend/pages/test_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +94,16 @@ class AdminDrawer extends ConsumerWidget {
             title: 'Search all',
             switchPage: () {
               ref.read(pageProvider.notifier).setPage(const SearchAllPage());
+            },
+          ),
+          DrawerTile(
+            title: 'Test page',
+            switchPage: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) {
+                  return const TestPage();
+                }),
+              );
             },
           ),
         ],

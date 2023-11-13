@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:csci361_vms_frontend/main.dart';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
@@ -20,7 +18,7 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  var _userInfo;
+  Map<String, String>? _userInfo;
 
   void _loadUser() async {
     final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
@@ -28,9 +26,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       HttpHeaders.authorizationHeader:
           'Bearer ${ref.read(jwt.jwtTokenProvider)}'
     });
-    var decodedResponse = json.decode(response.body);
-    print(decodedResponse);
-    print(ref.read(jwt.jwtTokenProvider));
+    Map<String, String> decodedResponse = json.decode(response.body);
     setState(() {
       _userInfo = decodedResponse;
     });

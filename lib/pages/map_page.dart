@@ -2,26 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class MyMapp extends StatelessWidget {
+class MapPage extends StatefulWidget {
+  const MapPage({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Google Maps Demo',
-      home: MapScreen(),
-    );
+  State<StatefulWidget> createState() {
+    return _MapPageState();
   }
 }
-class MapScreen extends StatefulWidget {
-  @override
-  _MapScreenState createState() => _MapScreenState();
-}
 
-class _MapScreenState extends State<MapScreen> {
+class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
   late LocationData currentLocation;
   Location location = Location();
   Set<Marker> markers = Set<Marker>();
-  List<LatLng> locations = [
+  List<LatLng> locations = const [
     LatLng(51.090786173856785, 71.40315888775255), // Marker B
     LatLng(51.09827895151411, 71.40959618928471),
     LatLng(51.09947822226643, 71.40624879252304),
@@ -38,27 +33,28 @@ class _MapScreenState extends State<MapScreen> {
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(currentLocation.latitude!, currentLocation.longitude!),
+            target:
+                LatLng(currentLocation.latitude!, currentLocation.longitude!),
             zoom: 15.0,
           ),
         ),
       );
       updateMarkers();
-        });
+    });
 
     markers.addAll(locations.map((LatLng latLng) {
       return Marker(
         markerId: MarkerId(latLng.toString()),
         position: latLng,
-        infoWindow: InfoWindow(title: 'Location'),
+        infoWindow: const InfoWindow(title: 'Location'),
       );
     }));
 
     markers.add(
       Marker(
-        markerId: MarkerId('currentLocation'),
-        position: LatLng(0, 0), // Initial position, will be updated later
-        infoWindow: InfoWindow(title: 'Your Location'),
+        markerId: const MarkerId('currentLocation'),
+        position: const LatLng(0, 0), // Initial position, will be updated later
+        infoWindow: const InfoWindow(title: 'Your Location'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ),
     );
@@ -67,9 +63,9 @@ class _MapScreenState extends State<MapScreen> {
   void updateMarkers() {
     markers.add(
       Marker(
-        markerId: MarkerId('currentLocation'),
+        markerId: const MarkerId('currentLocation'),
         position: LatLng(currentLocation.latitude!, currentLocation.longitude!),
-        infoWindow: InfoWindow(title: 'Your Location'),
+        infoWindow: const InfoWindow(title: 'Your Location'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ),
     );
@@ -79,13 +75,13 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vehicle Locations on Map'),
+        title: const Text('Vehicle Locations on Map'),
       ),
       body: GoogleMap(
         onMapCreated: (GoogleMapController controller) {
           mapController = controller;
         },
-        initialCameraPosition: CameraPosition(
+        initialCameraPosition: const CameraPosition(
           target: LatLng(0, 0),
           zoom: 15.0,
         ),
@@ -96,4 +92,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-

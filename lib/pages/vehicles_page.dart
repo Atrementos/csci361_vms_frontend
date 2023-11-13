@@ -29,7 +29,7 @@ class VehiclesPage extends ConsumerWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ref.read(pageProvider.notifier).setPage(MyMapp());
+                  ref.read(pageProvider.notifier).setPage(const MapPage());
                 },
                 child: const Text('View All Vehicles'),
               ),
