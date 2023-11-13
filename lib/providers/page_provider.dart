@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PageNotifier extends StateNotifier<Widget> {
-  PageNotifier() : super(LoginPage());
+  PageNotifier() : super(const LoginPage());
 
   void setPage(Widget page) {
     state = page;

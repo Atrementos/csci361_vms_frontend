@@ -1,7 +1,6 @@
 import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:csci361_vms_frontend/pages/map_page.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
-import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:csci361_vms_frontend/data/dummy_vehicles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
