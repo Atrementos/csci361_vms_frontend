@@ -29,7 +29,11 @@ class VehiclesPage extends ConsumerWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ref.read(pageProvider.notifier).setPage(const MapPage());
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => const MapPage(),
+                    ),
+                  );
                 },
                 child: const Text('View All Vehicles'),
               ),
