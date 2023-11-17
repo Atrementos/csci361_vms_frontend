@@ -3,6 +3,10 @@
         android:label="csci361_vms_frontend"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBSEPH2igl2OjZjwcTIJ_Ek7BcR2TfIDks"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

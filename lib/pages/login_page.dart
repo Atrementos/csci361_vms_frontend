@@ -7,13 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-class LoginPage extends ConsumerWidget {
-  LoginPage({super.key});
+class LoginPage extends ConsumerStatefulWidget {
+  const LoginPage({super.key});
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _LoginPageState();
+  }
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final passwordTextController = TextEditingController();
-  var _enteredUsername = '';
-  var _enteredPassword = '';
+  String _enteredUsername = '';
+  String _enteredPassword = '';
 
   void _authorize(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
@@ -38,7 +45,7 @@ class LoginPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),

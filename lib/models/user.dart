@@ -66,3 +66,5 @@ class FuelingPerson extends User {
     required super.password,
   });
 }
+
+final List<String> allRoles = ['Admin', 'Driver', 'Maintenance', 'Fueling'];
