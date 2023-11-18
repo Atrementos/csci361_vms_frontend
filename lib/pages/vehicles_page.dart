@@ -148,7 +148,7 @@ class VehiclesPage extends ConsumerWidget {
                     _registeredVehicles[index].licensePlate,
                   ),
                   title: Text(
-                    '${_registeredVehicles[index].make}, ${_registeredVehicles[index].model}, ${_registeredVehicles[index].year}',
+                    '${_registeredVehicles[index].model} (${_registeredVehicles[index].year})',
                   ),
                   trailing: const Icon(Icons.arrow_outward),
                 );
