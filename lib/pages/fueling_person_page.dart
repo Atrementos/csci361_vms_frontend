@@ -1,10 +1,5 @@
 // import 'dart:html';
-
-import 'package:csci361_vms_frontend/models/fueling_assignment.dart';
 import 'package:csci361_vms_frontend/models/user.dart';
-import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
-import 'package:flutter/material.dart';
-import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -51,7 +46,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Ð¡ar plate information'),
+                            label: Text('Car plate information'),
                           ),
                         ),
                       ),
