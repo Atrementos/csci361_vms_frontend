@@ -1,24 +1,89 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:csci361_vms_frontend/models/user.dart';
+import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
-class CreateUserPage extends StatefulWidget {
+class CreateUserPage extends ConsumerStatefulWidget {
   const CreateUserPage({super.key});
 
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<CreateUserPage> createState() {
     return _CreateUserPageState();
   }
 }
 
-class _CreateUserPageState extends State<CreateUserPage> {
+class _CreateUserPageState extends ConsumerState<CreateUserPage> {
   final formKey = GlobalKey<FormState>();
   bool showPassword = false;
   String enteredFirstName = '';
   String enteredLastName = '';
+  String? enteredMiddleName;
   String enteredEmail = '';
   String enteredPassword = '';
+  String enteredPhoneNumber = '';
+  String enteredGovenmentId = '';
+  String enteredAddress = '';
   String selectedRole = 'Admin';
+  String enteredLicenseNumber = '';
+
+  void addUser() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+      final query = {
+        "Email": enteredEmail,
+        "Password": enteredPassword,
+        "Name": enteredFirstName,
+        "MiddleName": enteredMiddleName ?? '',
+        "LastName": enteredLastName,
+        "ContactNumber": enteredPhoneNumber,
+        "GovernmentId": enteredGovenmentId,
+        "Address": enteredAddress,
+        "Role": selectedRole,
+      };
+      if (selectedRole == 'Driver') {
+        query['DrivingLicenseNumber'] = enteredLicenseNumber;
+      }
+      final url = Uri.http('vms-api.madi-wka.xyz',
+          (selectedRole == 'Driver') ? '/user/driver' : '/user/');
+      print(url);
+      final response = await http.post(
+        url,
+        body: query,
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+        },
+      );
+      var decodedResponse = json.decode(response.body);
+      if (response.statusCode == 201) {
+        print('Success');
+        print(decodedResponse['GovernmentId']);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('The user was successfully added.'),
+            ),
+          );
+        }
+      } else {
+        print('Fail');
+        print(decodedResponse);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Some unexpected error occurred when adding a new user.'),
+            ),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +110,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         }
                         return null;
                       },
+                      onSaved: (value) {
+                        enteredFirstName = value!;
+                      },
                       decoration: const InputDecoration(
                         label: Text('First name'),
                       ),
@@ -62,6 +130,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           return 'Incorrect last name format';
                         }
                         return null;
+                      },
+                      onSaved: (value) {
+                        enteredLastName = value!;
                       },
                       decoration: const InputDecoration(
                         label: Text('Last name'),
@@ -86,6 +157,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         }
                         return null;
                       },
+                      onSaved: (value) {
+                        enteredEmail = value!;
+                      },
                       decoration: const InputDecoration(
                         label: Text('Email'),
                       ),
@@ -99,10 +173,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
-                            !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                          return 'Incorrect last name format';
+                            RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                          return null;
                         }
-                        return null;
+                        return 'Incorrect middle name format';
+                      },
+                      onSaved: (value) {
+                        enteredMiddleName = value!;
                       },
                       decoration: const InputDecoration(
                         label: Text('Middle name'),
@@ -124,9 +201,12 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             value.isEmpty ||
                             !RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$')
                                 .hasMatch(value)) {
-                          return 'Incorrect last name format';
+                          return 'Incorrect password format';
                         }
                         return null;
+                      },
+                      onSaved: (value) {
+                        enteredPassword = value!;
                       },
                       decoration: const InputDecoration(
                         label: Text('Password'),
@@ -158,7 +238,6 @@ class _CreateUserPageState extends State<CreateUserPage> {
                   Expanded(
                     flex: 3,
                     child: TextFormField(
-                      obscureText: showPassword,
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -166,6 +245,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                           return 'Incorrect phone number format';
                         }
                         return null;
+                      },
+                      onSaved: (value) {
+                        enteredPhoneNumber = value!;
                       },
                       decoration: const InputDecoration(
                         label: Text('Phone number'),
@@ -201,11 +283,34 @@ class _CreateUserPageState extends State<CreateUserPage> {
               const SizedBox(
                 height: 8,
               ),
-              TextFormField(
-                maxLength: 60,
-                decoration: const InputDecoration(
-                  label: Text('Address'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      maxLength: 60,
+                      onSaved: (value) {
+                        enteredAddress = value!;
+                      },
+                      decoration: const InputDecoration(
+                        label: Text('Address'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      maxLength: 20,
+                      onSaved: (value) {
+                        enteredGovenmentId = value!;
+                      },
+                      decoration: const InputDecoration(
+                        label: Text('Government ID'),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               if (selectedRole == 'Driver')
                 const SizedBox(
@@ -220,6 +325,9 @@ class _CreateUserPageState extends State<CreateUserPage> {
                     }
                     return null;
                   },
+                  onSaved: (value) {
+                    enteredLicenseNumber = value!;
+                  },
                   decoration: const InputDecoration(
                     label: Text('Driving license number'),
                   ),
@@ -231,11 +339,15 @@ class _CreateUserPageState extends State<CreateUserPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      formKey.currentState!.reset();
+                    },
                     child: const Text('Reset'),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      addUser();
+                    },
                     child: const Text('Add user'),
                   ),
                 ],

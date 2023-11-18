@@ -5,6 +5,7 @@ import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
+import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +34,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}'
+          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+      HttpHeaders.accessControlAllowOriginHeader: 'access-control-allow-origin',
     });
     Map<String, dynamic> decodedResponse = json.decode(response.body);
+    userRole.setRole(decodedResponse['Role']);
     setState(() {
       _userInfo = decodedResponse;
-      print(_userInfo);
       firstName = _userInfo!['Name'];
       lastName = _userInfo!['LastName'];
       if (_userInfo!['MiddleName'] != null) {

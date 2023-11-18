@@ -19,13 +19,14 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final passwordTextController = TextEditingController();
+  bool showPassword = false;
   String _enteredUsername = '';
   String _enteredPassword = '';
 
   void _authorize(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/token');
+      final url = Uri.http('vms-api.madi-wka.xyz', 'token');
       final response = await http.post(
         url,
         body: {
@@ -35,6 +36,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       );
       if (response.statusCode != 200) {
         passwordTextController.clear();
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Incorrect email or password.'),
+            ),
+          );
+        }
         return;
       }
       var decodedResponse = json.decode(response.body);
@@ -84,7 +92,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   }
                   return null;
                 },
-                obscureText: true,
+                obscureText: !showPassword,
                 controller: passwordTextController,
                 onSaved: (value) {
                   _enteredPassword = value!;
@@ -92,6 +100,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 decoration: const InputDecoration(
                   label: Text('Password'),
                 ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                      value: showPassword,
+                      onChanged: (value) {
+                        setState(() {
+                          showPassword = value!;
+                        });
+                      }),
+                  const Text('Show password'),
+                ],
               ),
               const SizedBox(
                 height: 12,
