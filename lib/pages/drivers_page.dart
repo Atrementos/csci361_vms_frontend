@@ -15,6 +15,8 @@ class _DriversPageState extends State<DriversPage> {
 
   void _addDriver() {}
 
+  void loadDrivers() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

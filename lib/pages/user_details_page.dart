@@ -173,6 +173,28 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                           ),
                         ],
                       ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              readOnly: editMode ? false : true,
+                              initialValue: address,
+                              decoration: const InputDecoration(
+                                label: Text('Government ID'),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          // Expanded(
+                          //   child: DropdownButtonFormField(
+                          //     items: items,
+                          //     onChanged: onChanged,
+                          //     ),
+                          // ),
+                        ],
+                      ),
                       if (editMode)
                         const SizedBox(
                           height: 12,
