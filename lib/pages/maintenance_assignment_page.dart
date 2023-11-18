@@ -2,6 +2,9 @@
 import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:flutter/material.dart';
 
+import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
+import 'package:http/http.dart' as http;
+
 class MaintenanceAssignmentPage extends StatefulWidget {
   const  MaintenanceAssignmentPage({super.key, required this.maintenanceAssignment});
   final MaintenanceAssignment maintenanceAssignment;
@@ -116,5 +119,6 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
         ],
       ),
     );
+
   }
 }

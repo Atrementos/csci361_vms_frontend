@@ -69,7 +69,7 @@ class _ProfilePageState extends ConsumerState<MaintenancePersonPage> {
               onPressed: () {
                 ref
                     .read(pageProvider.notifier)
-                    .setPage(const CreateMaintenanceAssignmentPage());
+                    .setPage(const CreateMaintenancePage());
               },
               child: const Text('Maintenance Person Profile Page'),
             ),
