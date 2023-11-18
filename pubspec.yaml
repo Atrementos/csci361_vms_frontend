@@ -41,6 +41,7 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   location: ^5.0.0
   http: ^1.1.0
+  image_picker:
 
 dev_dependencies:
   flutter_test:
