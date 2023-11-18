@@ -21,43 +21,51 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
   final formKey = GlobalKey<FormState>();
   final searchResults = [];
   String enteredName = '';
-  String? selectedRole;
+  String selectedRole = '';
   int currentPage = 1;
   int perPage = 20;
   int totalPages = 0;
 
   void _loadResults() async {
-    if (formKey.currentState!.validate()) {
-      final queryParams = {
-        'name': enteredName,
-        'role': selectedRole,
-        'page': currentPage,
-        'per_page': perPage,
-      };
-      final url =
-          Uri.https('vms-api.madi-wka.xyz', '/user/search', queryParams);
-      final response = await http.get(url, headers: {
-        HttpHeaders.authorizationHeader:
-            'Bearer ${ref.read(jwt.jwtTokenProvider)}',
-      });
-      var decodedResponse = json.decode(response.body);
-      setState(() {
-        searchResults.addAll(decodedResponse['users']);
-        totalPages = decodedResponse['total_pages'];
-      });
-      return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    formKey.currentState!.save();
+    currentPage = 1;
+    print(enteredName);
+    print(selectedRole);
+    final queryParams = {
+      'name': enteredName,
+      'page': currentPage.toString(),
+      'per_page': perPage.toString(),
+    };
+    if (selectedRole != '') {
+      queryParams['role'] = selectedRole;
     }
+    final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
+    print(url);
+    final response = await http.get(url);
+    var decodedResponse = json.decode(response.body);
+    print(response.statusCode);
+    print(decodedResponse);
+    setState(() {
+      searchResults.clear();
+      searchResults.addAll(decodedResponse['users']);
+      totalPages = decodedResponse['total_pages'];
+    });
+    return;
   }
 
   void _loadMoreResults() async {
     currentPage++;
     final queryParams = {
       'name': enteredName,
-      'role': selectedRole,
-      'page': currentPage,
-      'per_page': perPage,
+      'page': currentPage.toString(),
+      'per_page': perPage.toString(),
     };
-    final url = Uri.https('vms-api.madi-wka.xyz', '/user/search', queryParams);
+
+    if (selectedRole != '') {
+      queryParams['role'] = selectedRole;
+    }
+    final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${ref.read(jwt.jwtTokenProvider)}',
@@ -65,93 +73,91 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     var decodedResponse = json.decode(response.body);
     setState(() {
       searchResults.addAll(decodedResponse['users']);
-      totalPages = decodedResponse['total_pages'];
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Search'),
-        ),
-        drawer: const AdminDrawer(),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Form(
-                key: formKey,
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: TextFormField(
-                              onSaved: (value) {
-                                enteredName = value!;
-                              },
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Incorrect name format';
-                                }
-                                return null;
-                              },
-                              decoration: const InputDecoration(
-                                label: Text('Name'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonFormField(
-                              value: selectedRole,
-                              items: [
-                                const DropdownMenuItem(
-                                  value: null,
-                                  child: Text('All roles'),
-                                ),
-                                for (final role in allRoles)
-                                  DropdownMenuItem(
-                                    value: role,
-                                    child: Text(role),
-                                  ),
-                              ],
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedRole = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              _loadResults();
+      appBar: AppBar(
+        title: const Text('Search'),
+      ),
+      drawer: const AdminDrawer(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Form(
+              key: formKey,
+              child: Expanded(
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFormField(
+                            maxLength: 100,
+                            onSaved: (value) {
+                              if (value == null || value.isEmpty) {
+                                enteredName = '';
+                              }
+                              enteredName = value!;
                             },
-                            child: const Text('Search'),
+                            decoration: const InputDecoration(
+                              label: Text('Name'),
+                            ),
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonFormField(
+                            value: selectedRole,
+                            items: [
+                              const DropdownMenuItem(
+                                value: '',
+                                child: Text('All roles'),
+                              ),
+                              for (final role in allRoles)
+                                DropdownMenuItem(
+                                  value: role,
+                                  child: Text(role),
+                                ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                selectedRole = value!;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _loadResults();
+                          },
+                          child: const Text('Search'),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
               ),
             ),
-            NotificationListener<ScrollNotification>(
+          ),
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
                 if (notification is ScrollEndNotification &&
                     notification.metrics.extentAfter == 0) {
@@ -159,34 +165,46 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                 }
                 return false;
               },
-              child: Expanded(
-                child: ListView.builder(
-                    itemCount: searchResults.length,
-                    itemBuilder: (context, index) {
-                      if (index < searchResults.length) {
-                        return ListTile(
-                          leading: Text(searchResults[index]['Role']),
-                          title: Text(
-                              '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
-                          trailing: IconButton(
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (ctx) =>
-                                      const Text('Under construction'),
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.arrow_outward),
-                          ),
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
-                    }),
+              child: ListView.builder(
+                itemCount:
+                    (searchResults.isEmpty) ? 0 : searchResults.length + 1,
+                itemBuilder: (context, index) {
+                  if (index < searchResults.length) {
+                    return ListTile(
+                      leading: Text(searchResults[index]['Role']),
+                      title: Text(
+                          '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
+                      trailing: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) =>
+                                  const Text('Under construction'),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.arrow_outward),
+                      ),
+                    );
+                  } else {
+                    if (currentPage == totalPages) {
+                      return const Text('You have reached the end.');
+                    } else {
+                      return const Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                  }
+                },
               ),
-            )
-          ],
-        ));
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
