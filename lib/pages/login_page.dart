@@ -33,7 +33,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           "password": _enteredPassword,
         },
       );
-      // final response = await http.get(url);
       if (response.statusCode != 200) {
         passwordTextController.clear();
         return;
