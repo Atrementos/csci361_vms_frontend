@@ -30,8 +30,6 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     FocusManager.instance.primaryFocus?.unfocus();
     formKey.currentState!.save();
     currentPage = 1;
-    print(enteredName);
-    print(selectedRole);
     final queryParams = {
       'name': enteredName,
       'page': currentPage.toString(),
@@ -41,11 +39,8 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
       queryParams['role'] = selectedRole;
     }
     final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
-    print(url);
     final response = await http.get(url);
     var decodedResponse = json.decode(response.body);
-    print(response.statusCode);
-    print(decodedResponse);
     setState(() {
       searchResults.clear();
       searchResults.addAll(decodedResponse['users']);
