@@ -1,3 +1,4 @@
+import 'package:csci361_vms_frontend/pages/create_user_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/drivers_page.dart';
@@ -94,6 +95,12 @@ class AdminDrawer extends ConsumerWidget {
             title: 'Search all',
             switchPage: () {
               ref.read(pageProvider.notifier).setPage(const SearchAllPage());
+            },
+          ),
+          DrawerTile(
+            title: 'Create a user',
+            switchPage: () {
+              ref.read(pageProvider.notifier).setPage(const CreateUserPage());
             },
           ),
           DrawerTile(
