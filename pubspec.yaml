@@ -43,7 +43,7 @@ dependencies:
   http: ^1.1.0
   image_picker:
   open_file_plus: ^3.4.1
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
