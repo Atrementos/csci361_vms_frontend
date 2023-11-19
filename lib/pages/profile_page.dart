@@ -13,6 +13,7 @@ import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widgets/driver_drawer.dart';
 
@@ -239,8 +240,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               label: const Text('Edit'),
             ),
           TextButton.icon(
-            onPressed: () {
+            onPressed: () async {
               jwt.setJwtToken('');
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('jwt', '');
               ref.read(pageProvider.notifier).setPage(const LoginPage());
             },
             icon: const Icon(Icons.logout),
@@ -249,13 +252,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ],
       ),
       body: mainContent,
-    drawer: _userInfo == null
-    ? const CircularProgressIndicator()
-        : ref.read(userRole.roleProvider) == 'Admin'
-    ? const AdminDrawer()
-        : ref.read(userRole.roleProvider) == 'Driver'
-    ? const DriverDrawer()
-        : const MaintenanceDrawer(),
+      drawer: _userInfo == null
+          ? const CircularProgressIndicator()
+          : ref.read(userRole.roleProvider) == 'Admin'
+              ? const AdminDrawer()
+              : ref.read(userRole.roleProvider) == 'Driver'
+                  ? const DriverDrawer()
+                  : const MaintenanceDrawer(),
     );
   }
 }
