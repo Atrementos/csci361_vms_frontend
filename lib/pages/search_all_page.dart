@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csci361_vms_frontend/models/user.dart';
+import 'package:csci361_vms_frontend/pages/user_details_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
@@ -172,10 +173,14 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                           '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
                       trailing: IconButton(
                         onPressed: () {
+                          print(searchResults[index]['id']);
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (ctx) =>
-                                  const Text('Under construction'),
+                              builder: (ctx) {
+                                return UserDetailsPage(
+                                    userId:
+                                        searchResults[index]['id'].toString());
+                              },
                             ),
                           );
                         },
