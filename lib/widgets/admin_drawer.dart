@@ -52,25 +52,7 @@ class AdminDrawer extends ConsumerWidget {
                   Navigator.of(context).pop();
                   ref.read(pageProvider.notifier).setPage(const ProfilePage());
                 },
-              )
-              // Row(
-              //   children: [
-              //     Icon(
-              //       Icons.account_circle,
-              //       color: Theme.of(context).colorScheme.primary,
-              //       size: 40,
-              //     ),
-              //     const SizedBox(
-              //       width: 20,
-              //     ),
-              //     Text(
-              //       'Profile',
-              //       style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              //           color: Theme.of(context).colorScheme.onPrimaryContainer),
-              //     ),
-              //   ],
-              // ),
-              ),
+              )),
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {

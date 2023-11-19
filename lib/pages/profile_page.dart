@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
+import 'package:csci361_vms_frontend/pages/login_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
 import 'package:csci361_vms_frontend/pages/report_driver_page_mob.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
@@ -235,6 +236,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               icon: const Icon(Icons.edit),
               label: const Text('Edit'),
             ),
+          TextButton.icon(
+            onPressed: () {
+              jwt.setJwtToken('');
+              ref.read(pageProvider.notifier).setPage(const LoginPage());
+            },
+            icon: const Icon(Icons.logout),
+            label: const Text('Logout'),
+          ),
         ],
       ),
       body: mainContent,
