@@ -9,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class UserDetailsPage extends ConsumerStatefulWidget {
-  final int userId;
+  final String userId;
 
   const UserDetailsPage({
     super.key,
@@ -35,19 +35,21 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
   String email = '';
   String role = '';
   String governmentId = '';
-  String password = '';
 
   @override
   void initState() {
     isAdmin = (ref.read(userRole.roleProvider) == 'Admin');
+    loadUserInfo();
     super.initState();
   }
 
   void loadUserInfo() async {
-    final url = Uri.http('vms-api.madi-wka.xyz/', '/user/${widget.userId}');
+    final url = Uri.http('vms-api.madi-wka.xyz', '/user/${widget.userId}');
     final response = await http.get(url);
-    userInfo = json.decode(response.body);
+    print(url);
+    print(json.decode(response.body));
     setState(() {
+      userInfo = json.decode(response.body);
       firstName = userInfo!['Name'];
       lastName = userInfo!['LastName'];
       if (userInfo!['MiddleName'] != null) {
@@ -58,7 +60,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
       email = userInfo!['Email'];
       role = userInfo!['Role'];
       governmentId = userInfo!['GovernmentId'];
-      password = userInfo!['Password'];
     });
   }
 
@@ -66,7 +67,7 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) {
-          return ReportDriverPage(driverId: widget.userId);
+          return ReportDriverPage(driverId: int.parse(widget.userId));
         },
       ),
     );
@@ -178,7 +179,7 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                           Expanded(
                             child: TextFormField(
                               readOnly: editMode ? false : true,
-                              initialValue: address,
+                              initialValue: governmentId,
                               decoration: const InputDecoration(
                                 label: Text('Government ID'),
                               ),
@@ -243,6 +244,7 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
           if (isAdmin || !editMode)
             TextButton.icon(
               onPressed: () {
+                formKey.currentState!.reset();
                 setState(() {
                   editMode = !editMode;
                 });
@@ -253,7 +255,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
         ],
       ),
       body: mainContent,
-      drawer: const AdminDrawer(),
     );
   }
 }
