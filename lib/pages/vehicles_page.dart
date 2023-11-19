@@ -1,34 +1,63 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:csci361_vms_frontend/pages/map_page.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-class VehiclesPage extends StatefulWidget {
+class VehiclesPage extends ConsumerStatefulWidget {
   const VehiclesPage({Key? key}) : super(key: key);
 
   @override
   _VehiclesPageState createState() => _VehiclesPageState();
 }
 
-class _VehiclesPageState extends State<VehiclesPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  Future<void> _addVehicle() async {
-    if (_formKey.currentState!.validate()) {
-      // TODO: Save and sync with the backend
-      // For now, let's reset the form
-      _formKey.currentState!.reset();
-      // Reload the vehicles list
-      await _loadVehicles();
-    }
+class _VehiclesPageState extends ConsumerState<VehiclesPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadVehicles();
   }
+  final _formKey = GlobalKey<FormState>();
+  String _model = "", _year = "", _license_plate = "", _mileage = "", _capacity = "", _type = "";
+  Future<void> _addVehicle() async {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        // TODO (Validate->Save->Sync with backend)
+        final Map<String, String> queryParams = {
+          "Model": _model,
+          "Year": _year,
+          "LicensePlate": _license_plate,
+          "Mileage": _mileage,
+          "Capacity": _capacity,
+          "Type": _type,
+        };
+
+        final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle');
+        var response = await http.post(url, body: jsonEncode(queryParams),
+            headers: {
+              HttpHeaders.authorizationHeader: "Bearer ${ref.read(
+                  jwt.jwtTokenProvider)}",
+              "Access-Control-Allow-Origin": "*",
+              'Content-Type': 'application/json',
+              'Accept': '*/*',
+            });
+        if(response.statusCode == 201){
+          _loadVehicles();
+        }
+        else{
+          throw Exception(response.body);
+        }
+  }}
 
   Future<void> _loadVehicles() async {
     try {
       setState(() {
+        fetchVehicleModels();
       });
     } catch (error) {
       throw('Error loading vehicles: $error');
@@ -99,6 +128,9 @@ class _VehiclesPageState extends State<VehiclesPage> {
                             }
                             return null;
                           },
+                          onChanged: (value){
+                            _license_plate = value;
+                          },
                         ),
                       ),
                       const SizedBox(
@@ -115,6 +147,9 @@ class _VehiclesPageState extends State<VehiclesPage> {
                             }
                             return null;
                           },
+                          onChanged: (value){
+                            _type = value;
+                          },
                         ),
                       ),
                     ],
@@ -129,6 +164,9 @@ class _VehiclesPageState extends State<VehiclesPage> {
                       }
                       return null;
                     },
+                    onChanged: (value){
+                      _model = value;
+                    },
                   ),
                   Row(
                     children: [
@@ -136,13 +174,16 @@ class _VehiclesPageState extends State<VehiclesPage> {
                         flex: 5,
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            labelText: 'Make',
+                            labelText: 'Mileage',
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a vehicle make';
+                              return 'Please enter a vehicle Mileage';
                             }
                             return null;
+                          },
+                          onChanged: (value){
+                            _mileage = value;
                           },
                         ),
                       ),
@@ -162,6 +203,9 @@ class _VehiclesPageState extends State<VehiclesPage> {
                             }
                             return null;
                           },
+                          onChanged: (value){
+                            _year = value;
+                          },
                         ),
                       ),
                       const SizedBox(
@@ -179,6 +223,9 @@ class _VehiclesPageState extends State<VehiclesPage> {
                               return 'Please enter a vehicle capacity';
                             }
                             return null;
+                          },
+                          onChanged: (value){
+                            _capacity = value;
                           },
                         ),
                       ),
