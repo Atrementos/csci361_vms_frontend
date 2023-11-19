@@ -178,8 +178,7 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                             MaterialPageRoute(
                               builder: (ctx) {
                                 return UserDetailsPage(
-                                    userId:
-                                        searchResults[index]['id'].toString());
+                                    userId: searchResults[index]['id']);
                               },
                             ),
                           );

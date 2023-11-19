@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csci361_vms_frontend/pages/create_drive_task_page.dart';
 import 'package:csci361_vms_frontend/pages/report_driver_page.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class UserDetailsPage extends ConsumerStatefulWidget {
-  final String userId;
+  final int userId;
 
   const UserDetailsPage({
     super.key,
@@ -46,8 +47,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
   void loadUserInfo() async {
     final url = Uri.http('vms-api.madi-wka.xyz', '/user/${widget.userId}');
     final response = await http.get(url);
-    print(url);
-    print(json.decode(response.body));
     setState(() {
       userInfo = json.decode(response.body);
       firstName = userInfo!['Name'];
@@ -67,7 +66,7 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) {
-          return ReportDriverPage(driverId: int.parse(widget.userId));
+          return ReportDriverPage(driverId: widget.userId);
         },
       ),
     );
@@ -233,6 +232,20 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
+          if (isAdmin && role == 'Driver')
+            TextButton.icon(
+              onPressed: () {
+                showModalBottomSheet(
+                  useSafeArea: true,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (ctx) =>
+                      CreateDriveTaskPage(driverId: widget.userId),
+                );
+              },
+              icon: const Icon(Icons.task_alt),
+              label: const Text('Give a task'),
+            ),
           if (isAdmin && role == 'Driver')
             TextButton.icon(
               onPressed: () {
