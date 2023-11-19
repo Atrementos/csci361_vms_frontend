@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,17 +20,17 @@ class ReportDriverPage extends ConsumerStatefulWidget {
 }
 
 class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
-  String reportData = '';
+  Uint8List pdfUrl = Uint8List(0);
 
   @override
   void initState() {
     super.initState();
-    makeReport();
+    loadPdfFromApi();
   }
 
-  void makeReport() async {
-    final url = Uri.http(
-        'vms-api.madi-wka.xyz/', '/report/jobsdone/${widget.driverId}');
+  void loadPdfFromApi() async {
+    final url =
+        Uri.http('vms-api.madi-wka.xyz', '/report/pdf/${widget.driverId}');
     final response = await http.get(
       url,
       headers: {
@@ -36,9 +38,9 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
             'Bearer ${ref.read(jwt.jwtTokenProvider)}',
       },
     );
-    var decodedResponse = json.decode(response.body);
+    final bytes = response.bodyBytes;
     setState(() {
-      reportData = decodedResponse;
+      pdfUrl = bytes;
     });
   }
 
@@ -48,10 +50,9 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
       appBar: AppBar(
         title: Text('Report on driver ${widget.driverId}'),
       ),
-      body: Column(
-        children: [
-          Text(reportData),
-        ],
+      body: PDFView(
+        filePath: null,
+        pdfData: pdfUrl,
       ),
     );
   }
