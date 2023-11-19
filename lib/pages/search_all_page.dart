@@ -173,7 +173,6 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                           '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
                       trailing: IconButton(
                         onPressed: () {
-                          print(searchResults[index]['id']);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (ctx) {
