@@ -12,6 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 
+import 'driver_drawer.dart';
+
 class AdminDrawer extends ConsumerWidget {
   const AdminDrawer({super.key});
 
@@ -21,8 +23,9 @@ class AdminDrawer extends ConsumerWidget {
     if (ref.read(userRole.roleProvider) != 'Admin') {
       if (ref.read(userRole.roleProvider) == 'Maintenance') {
         return const MaintenanceDrawer();
+      } else if (ref.read(userRole.roleProvider) == 'Driver') {
+        return const DriverDrawer();
       }
-      return MaintenanceDrawer();
     }
     return Drawer(
       child: Column(
