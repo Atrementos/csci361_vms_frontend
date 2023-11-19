@@ -76,115 +76,113 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               padding: const EdgeInsets.all(12),
               child: Form(
                 key: _formKey,
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: firstName,
-                              decoration: const InputDecoration(
-                                label: Text('First Name'),
-                              ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: firstName,
+                            decoration: const InputDecoration(
+                              label: Text('First Name'),
                             ),
                           ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: lastName,
-                              decoration: const InputDecoration(
-                                label: Text('Last Name'),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: contactNumber,
-                              decoration: const InputDecoration(
-                                label: Text('Contact Number'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: middleName,
-                              decoration: const InputDecoration(
-                                label: Text('Middle Name'),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: address,
-                              decoration: const InputDecoration(
-                                label: Text('Address'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              readOnly: editMode ? false : true,
-                              initialValue: email,
-                              decoration: const InputDecoration(
-                                label: Text('Email'),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (editMode)
+                        ),
                         const SizedBox(
-                          height: 12,
+                          width: 12,
                         ),
-                      if (editMode)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  editMode = false;
-                                  _formKey.currentState!.reset();
-                                });
-                              },
-                              child: const Text('Cancel'),
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: lastName,
+                            decoration: const InputDecoration(
+                              label: Text('Last Name'),
                             ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: const Text('Save'),
-                            ),
-                          ],
+                          ),
                         ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: contactNumber,
+                            decoration: const InputDecoration(
+                              label: Text('Contact Number'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: middleName,
+                            decoration: const InputDecoration(
+                              label: Text('Middle Name'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: address,
+                            decoration: const InputDecoration(
+                              label: Text('Address'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: email,
+                            decoration: const InputDecoration(
+                              label: Text('Email'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (editMode)
+                      const SizedBox(
+                        height: 12,
+                      ),
+                    if (editMode)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                editMode = false;
+                                _formKey.currentState!.reset();
+                              });
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Save'),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -240,9 +238,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ],
       ),
       body: mainContent,
-      drawer: ref.read(userRole.roleProvider) == 'Admin'
-          ? const AdminDrawer()
-          : const MaintenanceDrawer(),
+      drawer: _userInfo == null
+          ? const CircularProgressIndicator()
+          : ref.read(userRole.roleProvider) == 'Admin'
+              ? const AdminDrawer()
+              : const MaintenanceDrawer(),
     );
   }
 }
