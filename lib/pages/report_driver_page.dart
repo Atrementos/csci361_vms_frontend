@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file_plus/open_file_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:html' as html;
 
 class ReportDriverPage extends ConsumerStatefulWidget {
   final int driverId;
@@ -38,22 +42,48 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
             'Bearer ${ref.read(jwt.jwtTokenProvider)}',
       },
     );
-    final bytes = response.bodyBytes;
+    final bytess = response.bodyBytes;
     setState(() {
-      pdfUrl = bytes;
+      pdfUrl = bytess;
     });
+  }
+
+  void _openFileFromBytes(Uint8List bytes) async {
+    if (kIsWeb) {
+      final _base64 = base64Encode(bytes);
+      // Create the link with the file
+      final anchor = html.AnchorElement(
+          href: 'data:application/octet-stream;base64,$_base64')
+        ..target = 'blank';
+      // add the name
+
+      anchor.download = 'report.pdf';
+
+      // trigger download
+      html.document.body?.append(anchor);
+      anchor.click();
+      anchor.remove();
+      return;
+    }
+    final tempDir = await getTemporaryDirectory();
+    final file = await File('${tempDir.path}/report.pdf').create();
+    await file.writeAsBytes(bytes);
+    await OpenFile.open(file.path);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Report on driver ${widget.driverId}'),
-      ),
-      body: PDFView(
-        filePath: null,
-        pdfData: pdfUrl,
-      ),
-    );
+        appBar: AppBar(
+          title: Text('Report on driver ${widget.driverId}'),
+        ),
+        body: pdfUrl.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : OutlinedButton(
+                child: const Text("Open PDF"),
+                onPressed: () {
+                  _openFileFromBytes(pdfUrl);
+                },
+              ));
   }
 }
