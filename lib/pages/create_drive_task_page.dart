@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:csci361_vms_frontend/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
@@ -42,15 +41,24 @@ class _CreateDriveTaskPageState extends ConsumerState<CreateDriveTaskPage> {
         'Accept': '*/*',
       });
       if (response.statusCode == 201) {
-        // Task created successfully
-        print('Task created');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Task created successfully!', style: TextStyle(color: Colors.white),),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.cyan,
+
+          ),
+        );
       } else {
-        // Failed to create task
-        print('Failed to create task with status code: ${response.statusCode}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to create task'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
-      // Exception occurred
-      print('Exception: $e');
+      throw Exception(e);
     }
   }
   @override
