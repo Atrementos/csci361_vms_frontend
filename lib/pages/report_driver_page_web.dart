@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file_plus/open_file_plus.dart';
@@ -73,18 +71,6 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //     appBar: AppBar(
-    //       title: Text('Report on driver ${widget.driverId}'),
-    //     ),
-    //     body: pdfUrl.isEmpty
-    //         ? const Center(child: CircularProgressIndicator())
-    //         : OutlinedButton(
-    //             child: const Text("Open PDF"),
-    //             onPressed: () {
-    //               _openFileFromBytes(pdfUrl);
-    //             },
-    //           ));
     return TextButton.icon(
       onPressed: () {
         _openFileFromBytes(pdfUrl);

@@ -1,4 +1,3 @@
-// import 'dart:html';
 import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:csci361_vms_frontend/models/user.dart';
 import 'package:flutter/material.dart';
@@ -162,13 +161,6 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                   icon: const Icon(Icons.arrow_outward),
                 ),
               );
-              // const Row(
-              //   children: [
-              //     Text('Vehicle license plate'),
-              //     Text('Vehicle model'),
-              //     Text('Vehicle year')
-              //   ],
-              // );
             },
           ),
         ),

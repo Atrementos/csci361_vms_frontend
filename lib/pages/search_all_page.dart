@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:csci361_vms_frontend/models/user.dart';
 import 'package:csci361_vms_frontend/pages/user_details_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';

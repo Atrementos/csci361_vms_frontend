@@ -42,8 +42,6 @@ class VehiclesForMaintenancePage extends ConsumerWidget {
           const SizedBox(
             height: 6,
           ),
-
-
           Expanded(
             child: ListView.builder(
               itemCount: _registeredVehicles.length,
@@ -57,13 +55,6 @@ class VehiclesForMaintenancePage extends ConsumerWidget {
                   ),
                   trailing: const Icon(Icons.arrow_outward),
                 );
-                // const Row(
-                //   children: [
-                //     Text('Vehicle license plate'),
-                //     Text('Vehicle model'),
-                //     Text('Vehicle year')
-                //   ],
-                // );
               },
             ),
           ),

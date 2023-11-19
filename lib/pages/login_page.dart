@@ -35,21 +35,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void loadJwt() async {
     final SharedPreferences newPrefs = await prefs;
     if (newPrefs.getString('jwt') != null && newPrefs.getString('jwt') != '') {
-      print('Jwt token found!');
-      print(newPrefs.getString('jwt'));
       final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
       final response = await http.get(url, headers: {
         HttpHeaders.authorizationHeader: 'Bearer ${newPrefs.getString('jwt')}',
       });
-      print(response.statusCode);
-      print(response.body);
       if (response.statusCode == 200) {
         jwt.setJwtToken(newPrefs.getString('jwt')!);
-        print('Jwt token set');
         ref.read(pageProvider.notifier).setPage(const ProfilePage());
       }
-    } else {
-      print('No jwt token saved.');
     }
   }
 
