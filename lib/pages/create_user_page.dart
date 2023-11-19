@@ -34,7 +34,7 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
   void addUser() async {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      final query = {
+      final postBody = {
         "Email": enteredEmail,
         "Password": enteredPassword,
         "Name": enteredFirstName,
@@ -46,23 +46,22 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
         "Role": selectedRole,
       };
       if (selectedRole == 'Driver') {
-        query['DrivingLicenseNumber'] = enteredLicenseNumber;
+        postBody['DrivingLicenseNumber'] = enteredLicenseNumber;
       }
       final url = Uri.http('vms-api.madi-wka.xyz',
-          (selectedRole == 'Driver') ? '/user/driver' : '/user/');
-      print(url);
+          (selectedRole == 'Driver') ? 'user/driver' : 'user/');
       final response = await http.post(
         url,
-        body: query,
+        body: json.encode(postBody),
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+          "Access-Control-Allow-Origin": "*",
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
         },
       );
-      var decodedResponse = json.decode(response.body);
       if (response.statusCode == 201) {
-        print('Success');
-        print(decodedResponse['GovernmentId']);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -71,8 +70,6 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
           );
         }
       } else {
-        print('Fail');
-        print(decodedResponse);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
