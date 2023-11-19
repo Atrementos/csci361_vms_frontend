@@ -56,9 +56,7 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
         headers: {
           HttpHeaders.authorizationHeader:
               'Bearer ${ref.read(jwt.jwtTokenProvider)}',
-          "Access-Control-Allow-Origin": "*",
           'Content-Type': 'application/json',
-          'Accept': '*/*'
         },
       );
       if (response.statusCode == 201) {
@@ -71,6 +69,7 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
         }
       } else {
         if (context.mounted) {
+          print(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
