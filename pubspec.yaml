@@ -41,7 +41,11 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   location: ^5.0.0
   http: ^1.1.0
-  image_picker:
+  image_picker: 
+  flutter_pdfview: ^1.0.1
+  path_provider: any
+  permission_handler: any
+  open_file_plus: any
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +57,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
