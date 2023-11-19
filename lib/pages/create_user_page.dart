@@ -69,7 +69,6 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
         }
       } else {
         if (context.mounted) {
-          print(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
