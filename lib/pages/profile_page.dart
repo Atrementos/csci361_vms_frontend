@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+import '../widgets/driver_drawer.dart';
+
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
@@ -247,11 +249,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ],
       ),
       body: mainContent,
-      drawer: _userInfo == null
-          ? const CircularProgressIndicator()
-          : ref.read(userRole.roleProvider) == 'Admin'
-              ? const AdminDrawer()
-              : const MaintenanceDrawer(),
+    drawer: _userInfo == null
+    ? const CircularProgressIndicator()
+        : ref.read(userRole.roleProvider) == 'Admin'
+    ? const AdminDrawer()
+        : ref.read(userRole.roleProvider) == 'Driver'
+    ? const DriverDrawer()
+        : const MaintenanceDrawer(),
     );
   }
 }
