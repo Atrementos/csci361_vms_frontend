@@ -89,9 +89,7 @@ class MaintenanceDrawer extends ConsumerWidget {
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(VehiclesForMaintenancePage());
+              ref.read(pageProvider.notifier).setPage(VehiclesPage());
             },
           ),
         ],

@@ -16,8 +16,7 @@ class MaintenanceAssignmentPage extends StatefulWidget {
   }
 }
 
-class _MaintenanceAssignmentPageState
-    extends State<MaintenanceAssignmentPage> {
+class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
   final _formKey = GlobalKey<FormState>();
   List<MaintenanceAssignment> _MaintenanceAssignments = [];
   final imagepicker = ImagePicker();
@@ -38,8 +37,8 @@ class _MaintenanceAssignmentPageState
           Text(
             'Update a maintenance assignment',
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
           ),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -50,14 +49,6 @@ class _MaintenanceAssignmentPageState
                   children: [
                     Row(
                       children: [
-                        Expanded(
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              label: Text('Maintenance Worker'),
-                            ),
-                          ),
-                        ),
                         const SizedBox(
                           width: 12,
                         ),

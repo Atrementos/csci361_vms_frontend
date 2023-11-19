@@ -6,15 +6,24 @@ import 'package:csci361_vms_frontend/pages/search_all_page.dart';
 import 'package:csci361_vms_frontend/pages/test_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
+import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
+import 'package:csci361_vms_frontend/providers/role_provider.dart';
 
 class AdminDrawer extends ConsumerWidget {
   const AdminDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+//redirect to non-admin drawer if not admin
+    if (ref.read(userRole.roleProvider) != 'Admin') {
+      if (ref.read(userRole.roleProvider) == 'Maintenance') {
+        return const MaintenanceDrawer();
+      }
+      return MaintenanceDrawer();
+    }
     return Drawer(
       child: Column(
         children: [
