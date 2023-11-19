@@ -6,22 +6,26 @@ import 'package:image_picker/image_picker.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:csci361_vms_frontend/data/dummy_maintenance_assigment.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_assignment_page.dart';
+import 'package:intl/intl.dart';
 
 class CreateMaintenancePage extends StatefulWidget {
-  const CreateMaintenancePage({super.key});
+  const CreateMaintenancePage({Key? key}) : super(key: key);
 
   @override
   State<CreateMaintenancePage> createState() => _CreateMaintenanceState();
 }
 
 class _CreateMaintenanceState extends State<CreateMaintenancePage> {
-  final List<MaintenanceAssignment> _registeredMaintenanceAssignment = dummyMaintenanceAssignments;
+  final List<MaintenanceAssignment> _registeredMaintenanceAssignment =
+      dummyMaintenanceAssignments;
   final _formKey = GlobalKey<FormState>();
 
   final imagepicker = ImagePicker();
 
-  get image => null;
-  void _addMaintenanceAssignment() {}
+  void _addMaintenanceAssignment() {
+    // Add your logic to handle the addition of maintenance assignments
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +54,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Description'),
+                            labelText: 'Description',
                           ),
                         ),
                       ),
@@ -60,7 +64,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('VehicleID'),
+                            labelText: 'VehicleID',
                           ),
                         ),
                       ),
@@ -72,7 +76,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                         child: TextFormField(
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            label: Text('Date'),
+                            labelText: 'Date',
                           ),
                         ),
                       ),
@@ -82,7 +86,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Car Part'),
+                            labelText: 'Car Part',
                           ),
                         ),
                       ),
@@ -94,7 +98,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                         child: TextFormField(
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            label: Text('Repairing Cost'),
+                            labelText: 'Repairing Cost',
                           ),
                         ),
                       ),
@@ -104,7 +108,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Status'),
+                            labelText: 'Status',
                           ),
                         ),
                       ),
@@ -142,12 +146,33 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
           child: ListView.builder(
             itemCount: _registeredMaintenanceAssignment.length,
             itemBuilder: (context, index) {
+              DateTime fullDate = _registeredMaintenanceAssignment[index].date;
+              DateFormat dateFormat = DateFormat('yyyy-MM-dd');
+              String formattedDate = dateFormat.format(fullDate);
               return ListTile(
                 leading: Text(
                   _registeredMaintenanceAssignment[index].description,
                 ),
-                title: Text(
-                  ' ${_registeredMaintenanceAssignment[index].vehicle.id}, ${_registeredMaintenanceAssignment[index].date}',
+
+                title: Row(
+                  children: [
+                    Text(
+                      ' ${_registeredMaintenanceAssignment[index].vehicle.licensePlate}, $formattedDate, ${_registeredMaintenanceAssignment[index].totalCost}',
+                    ),
+                    const SizedBox(width: 8),
+                    // Add Checkbox for completion status
+                    Checkbox(
+                      value: _registeredMaintenanceAssignment[index].completed,
+                      onChanged: (bool? value) {
+                        // Handle the change of completion status
+                        // Update the completion status in the MaintenanceAssignment object
+                        setState(() {
+                          _registeredMaintenanceAssignment[index].completed =
+                              value ?? false;
+                        });
+                      },
+                    ),
+                  ],
                 ),
 
                 trailing: IconButton(
@@ -162,13 +187,6 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                   icon: const Icon(Icons.arrow_outward),
                 ),
               );
-              // const Row(
-              //   children: [
-              //     Text('Vehicle license plate'),
-              //     Text('Vehicle model'),
-              //     Text('Vehicle year')
-              //   ],
-              // );
             },
           ),
         ),
