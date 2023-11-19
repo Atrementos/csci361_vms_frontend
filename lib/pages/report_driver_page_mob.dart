@@ -73,17 +73,12 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Report on driver ${widget.driverId}'),
-        ),
-        body: pdfUrl.isEmpty
-            ? const Center(child: CircularProgressIndicator())
-            : OutlinedButton(
-                child: const Text("Open PDF"),
-                onPressed: () {
-                  _openFileFromBytes(pdfUrl);
-                },
-              ));
+    return TextButton.icon(
+      onPressed: () {
+        _openFileFromBytes(pdfUrl);
+      },
+      icon: const Icon(Icons.receipt_long),
+      label: const Text('Get a report'),
+    );
   }
 }

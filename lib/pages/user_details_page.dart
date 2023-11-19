@@ -243,13 +243,14 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
               label: const Text('Give a task'),
             ),
           if (isAdmin && role == 'Driver')
-            TextButton.icon(
-              onPressed: () {
-                openReportPage();
-              },
-              icon: const Icon(Icons.receipt_long),
-              label: const Text('Get a report'),
-            ),
+            // TextButton.icon(
+            //   onPressed: () {
+            //     openReportPage();
+            //   },
+            //   icon: const Icon(Icons.receipt_long),
+            //   label: const Text('Get a report'),
+            // ),
+            ReportDriverPage(driverId: widget.userId),
           if (isAdmin && !editMode)
             TextButton.icon(
               onPressed: () {
