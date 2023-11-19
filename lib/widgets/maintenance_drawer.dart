@@ -54,40 +54,44 @@ class MaintenanceDrawer extends ConsumerWidget {
                   ref.read(pageProvider.notifier).setPage(const ProfilePage());
                 },
               )
-            // Row(
-            //   children: [
-            //     Icon(
-            //       Icons.account_circle,
-            //       color: Theme.of(context).colorScheme.primary,
-            //       size: 40,
-            //     ),
-            //     const SizedBox(
-            //       width: 20,
-            //     ),
-            //     Text(
-            //       'Profile',
-            //       style: Theme.of(context).textTheme.titleLarge!.copyWith(
-            //           color: Theme.of(context).colorScheme.onPrimaryContainer),
-            //     ),
-            //   ],
-            // ),
-          ),
-          DrawerTile(
-            title: 'Profile',
-            switchPage: () {
-              ref.read(pageProvider.notifier).setPage(const MaintenanceProfilePage());
-            },
-          ),
+              // Row(
+              //   children: [
+              //     Icon(
+              //       Icons.account_circle,
+              //       color: Theme.of(context).colorScheme.primary,
+              //       size: 40,
+              //     ),
+              //     const SizedBox(
+              //       width: 20,
+              //     ),
+              //     Text(
+              //       'Profile',
+              //       style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              //           color: Theme.of(context).colorScheme.onPrimaryContainer),
+              //     ),
+              //   ],
+              // ),
+              ),
+          // DrawerTile(
+          //   title: 'Profile',
+          //   switchPage: () {
+          //     ref.read(pageProvider.notifier).setPage(const MaintenanceProfilePage());
+          //   },
+          // ),
           DrawerTile(
             title: 'Create new job assignment',
             switchPage: () {
-              ref.read(pageProvider.notifier).setPage(const CreateMaintenancePage());
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(const CreateMaintenancePage());
             },
           ),
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
-              ref.read(pageProvider.notifier).setPage( VehiclesForMaintenancePage());
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(VehiclesForMaintenancePage());
             },
           ),
         ],

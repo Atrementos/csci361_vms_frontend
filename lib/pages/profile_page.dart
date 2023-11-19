@@ -231,7 +231,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ],
       ),
       body: mainContent,
-      drawer: const AdminDrawer(),
+      drawer: ref.read(userRole.roleProvider) == 'Admin'
+          ? const AdminDrawer()
+          : const MaintenanceDrawer(),
     );
   }
 }
