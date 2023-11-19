@@ -82,7 +82,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
         'vms-api.madi-wka.xyz',
         '/user/${widget.userId}',
       );
-      print(url);
       final response = await http.put(
         url,
         body: json.encode(postBody),

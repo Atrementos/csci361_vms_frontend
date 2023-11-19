@@ -35,7 +35,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void loadJwt() async {
     final SharedPreferences newPrefs = await prefs;
     if (newPrefs.getString('jwt') != null && newPrefs.getString('jwt') != '') {
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
       final response = await http.get(url, headers: {
         HttpHeaders.authorizationHeader: 'Bearer ${newPrefs.getString('jwt')}',
       });

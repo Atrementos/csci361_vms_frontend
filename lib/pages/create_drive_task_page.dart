@@ -31,7 +31,7 @@ class _CreateDriveTaskPageState extends ConsumerState<CreateDriveTaskPage> {
     };
 
     try {
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/task');
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/task/');
       var response =
       await http.post(url, body: jsonEncode(taskData), headers: {
         HttpHeaders.authorizationHeader:
@@ -50,6 +50,7 @@ class _CreateDriveTaskPageState extends ConsumerState<CreateDriveTaskPage> {
           ),
         );
       } else {
+        print(response.statusCode);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to create task'),

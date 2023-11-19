@@ -36,7 +36,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String email = '';
 
   void _loadUser() async {
-    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
+    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${ref.read(jwt.jwtTokenProvider)}',
