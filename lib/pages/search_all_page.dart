@@ -122,7 +122,9 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                             for (final role in allRoles)
                               DropdownMenuItem(
                                 value: role,
-                                child: Text(role),
+                                child: Text(
+                                  role,
+                                ),
                               ),
                           ],
                           onChanged: (value) {

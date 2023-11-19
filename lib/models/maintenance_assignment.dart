@@ -6,6 +6,7 @@ class MaintenanceAssignment {
   final double totalCost;
   final Vehicle vehicle;
   final Assignee assignedTo;
+  bool completed = false;
 
   MaintenanceAssignment({
     required this.id,
@@ -15,6 +16,7 @@ class MaintenanceAssignment {
     required this.totalCost,
     required this.vehicle,
     required this.assignedTo,
+    required this.completed,
 
   });
 }
