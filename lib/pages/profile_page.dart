@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
-import 'package:csci361_vms_frontend/pages/report_driver_page.dart';
+import 'package:csci361_vms_frontend/pages/report_driver_page_mob.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
