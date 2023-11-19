@@ -17,7 +17,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
-  LocationData? currentLocation;
+  late LocationData currentLocation;
   Location location = Location();
   Set<Marker> markers = <Marker>{};
 
@@ -36,15 +36,18 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-
     location.onLocationChanged.listen((LocationData cLoc) {
       setState(() {
         currentLocation = cLoc;
         updateMarkers();
       });
+      updateMarkers();
     });
-
-    fetchVehicleModels().then((vehicles) {
+    fetchVehicleModels().then((vehicles) async {
+      BitmapDescriptor markerbitmap = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(),
+        "assets/images/car_marker.png",
+      );
       setState(() {
         markers.addAll(vehicles.map((vehicle) {
           return Marker(
@@ -56,6 +59,7 @@ class _MapPageState extends State<MapPage> {
             infoWindow: InfoWindow(
               title: 'Vehicle id: ${vehicle.vehicleId}, Model: ${vehicle.model}, License Plate: ${vehicle.licensePlate}',
             ),
+            icon: markerbitmap,
           );
         }));
       });
@@ -66,7 +70,7 @@ class _MapPageState extends State<MapPage> {
     markers.add(
       Marker(
         markerId: const MarkerId('currentLocation'),
-        position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+        position: LatLng(currentLocation.latitude!, currentLocation.longitude!),
         infoWindow: const InfoWindow(title: 'Your Location'),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ),
@@ -83,9 +87,9 @@ class _MapPageState extends State<MapPage> {
         onMapCreated: (GoogleMapController controller) {
           mapController = controller;
         },
-        initialCameraPosition: CameraPosition(
-          target: LatLng(currentLocation?.latitude ?? 0, currentLocation?.longitude ?? 0),
-          zoom: 15.0,
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(51.1801, 71.44598),
+          zoom: 10.0,
         ),
         myLocationEnabled: true,
         myLocationButtonEnabled: true,
