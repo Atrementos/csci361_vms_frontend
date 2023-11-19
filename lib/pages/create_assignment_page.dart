@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:csci361_vms_frontend/data/dummy_maintenance_assigment.dart';
+import 'package:csci361_vms_frontend/pages/maintenance_assignment_page.dart';
 
 class CreateMaintenancePage extends StatefulWidget {
   const CreateMaintenancePage({super.key});
@@ -131,17 +132,7 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          imagepicker.pickImage(source: ImageSource.gallery);
-                        },
-                        child: Text('Upload Photo'),
-                      )
-                    ],
-                  )
+
                 ],
               ),
             ),
@@ -158,7 +149,18 @@ class _CreateMaintenanceState extends State<CreateMaintenancePage> {
                 title: Text(
                   ' ${_registeredMaintenanceAssignment[index].vehicle.id}, ${_registeredMaintenanceAssignment[index].date}',
                 ),
-                trailing: const Icon(Icons.arrow_outward),
+
+                trailing: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => MaintenanceAssignmentPage(
+                            maintenanceAssignment: _registeredMaintenanceAssignment[index]),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.arrow_outward),
+                ),
               );
               // const Row(
               //   children: [

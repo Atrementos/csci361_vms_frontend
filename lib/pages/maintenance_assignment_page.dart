@@ -1,12 +1,13 @@
-//import 'package:csci361_vms_frontend/models/fueling_assignment.dart';
 import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:flutter/material.dart';
-
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
 class MaintenanceAssignmentPage extends StatefulWidget {
-  const  MaintenanceAssignmentPage({super.key, required this.maintenanceAssignment});
+  const MaintenanceAssignmentPage(
+      {Key? key, required this.maintenanceAssignment})
+      : super(key: key);
   final MaintenanceAssignment maintenanceAssignment;
 
   @override
@@ -15,9 +16,11 @@ class MaintenanceAssignmentPage extends StatefulWidget {
   }
 }
 
-class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
+class _MaintenanceAssignmentPageState
+    extends State<MaintenanceAssignmentPage> {
   final _formKey = GlobalKey<FormState>();
   List<MaintenanceAssignment> _MaintenanceAssignments = [];
+  final imagepicker = ImagePicker();
 
   void _createAssignment() {}
 
@@ -33,7 +36,7 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
             height: 6,
           ),
           Text(
-            'Assign a maintenance assignment to maintenance person here',
+            'Update a maintenance assignment',
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
@@ -93,7 +96,7 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
                         ),
                         ElevatedButton(
                           onPressed: _createAssignment,
-                          child: const Text('Add'),
+                          child: const Text('Update'),
                         ),
                       ],
                     ),
@@ -101,6 +104,17 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
                 ),
               ),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  imagepicker.pickImage(source: ImageSource.gallery);
+                },
+                child: Text('Upload Photo'),
+              ),
+            ],
           ),
           Expanded(
             child: ListView.builder(
@@ -119,6 +133,5 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
         ],
       ),
     );
-
   }
 }
