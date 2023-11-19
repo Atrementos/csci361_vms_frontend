@@ -50,6 +50,9 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
   }
 
   void _loadMoreResults() async {
+    if (currentPage == totalPages) {
+      return;
+    }
     currentPage++;
     final queryParams = {
       'name': enteredName,
@@ -84,70 +87,68 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
             padding: const EdgeInsets.all(12),
             child: Form(
               key: formKey,
-              child: Expanded(
-                child: Column(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: TextFormField(
-                            maxLength: 100,
-                            onSaved: (value) {
-                              if (value == null || value.isEmpty) {
-                                enteredName = '';
-                              }
-                              enteredName = value!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Name'),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: DropdownButtonFormField(
-                            value: selectedRole,
-                            items: [
-                              const DropdownMenuItem(
-                                value: '',
-                                child: Text('All roles'),
-                              ),
-                              for (final role in allRoles)
-                                DropdownMenuItem(
-                                  value: role,
-                                  child: Text(role),
-                                ),
-                            ],
-                            onChanged: (value) {
-                              setState(() {
-                                selectedRole = value!;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _loadResults();
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: TextFormField(
+                          maxLength: 100,
+                          onSaved: (value) {
+                            if (value == null || value.isEmpty) {
+                              enteredName = '';
+                            }
+                            enteredName = value!;
                           },
-                          child: const Text('Search'),
+                          decoration: const InputDecoration(
+                            label: Text('Name'),
+                          ),
                         ),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: DropdownButtonFormField(
+                          value: selectedRole,
+                          items: [
+                            const DropdownMenuItem(
+                              value: '',
+                              child: Text('All roles'),
+                            ),
+                            for (final role in allRoles)
+                              DropdownMenuItem(
+                                value: role,
+                                child: Text(role),
+                              ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRole = value!;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          _loadResults();
+                        },
+                        child: const Text('Search'),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
           ),
