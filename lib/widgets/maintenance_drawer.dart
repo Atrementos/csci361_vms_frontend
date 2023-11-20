@@ -1,10 +1,5 @@
 import 'package:csci361_vms_frontend/pages/update_assignment_page.dart';
-import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
-import 'package:csci361_vms_frontend/pages/maintenance_profile_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
-import 'package:csci361_vms_frontend/pages/drivers_page.dart';
-import 'package:csci361_vms_frontend/pages/search_all_page.dart';
-import 'package:csci361_vms_frontend/pages/vehicle_for_maintenance_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
@@ -53,43 +48,19 @@ class MaintenanceDrawer extends ConsumerWidget {
                   Navigator.of(context).pop();
                   ref.read(pageProvider.notifier).setPage(const ProfilePage());
                 },
-              )
-              // Row(
-              //   children: [
-              //     Icon(
-              //       Icons.account_circle,
-              //       color: Theme.of(context).colorScheme.primary,
-              //       size: 40,
-              //     ),
-              //     const SizedBox(
-              //       width: 20,
-              //     ),
-              //     Text(
-              //       'Profile',
-              //       style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              //           color: Theme.of(context).colorScheme.onPrimaryContainer),
-              //     ),
-              //   ],
-              // ),
-              ),
-          // DrawerTile(
-          //   title: 'Profile',
-          //   switchPage: () {
-          //     ref.read(pageProvider.notifier).setPage(const MaintenanceProfilePage());
-          //   },
-          // ),
+              )),
           DrawerTile(
             title: 'Create new job assignment',
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
-                  .setPage( UpdateAssignmentPage());
+                  .setPage(const UpdateAssignmentPage());
             },
           ),
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
-              ref.read(pageProvider.notifier).setPage(VehiclesPage());
+              ref.read(pageProvider.notifier).setPage(const VehiclesPage());
             },
           ),
         ],

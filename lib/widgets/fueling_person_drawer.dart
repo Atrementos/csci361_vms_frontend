@@ -1,11 +1,5 @@
 import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
-import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
-import 'package:csci361_vms_frontend/pages/maintenance_profile_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
-import 'package:csci361_vms_frontend/pages/drivers_page.dart';
-import 'package:csci361_vms_frontend/pages/search_all_page.dart';
-import 'package:csci361_vms_frontend/pages/vehicle_for_maintenance_page.dart';
-import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,31 +47,7 @@ class FuelingPersonDrawer extends ConsumerWidget {
                   Navigator.of(context).pop();
                   ref.read(pageProvider.notifier).setPage(const ProfilePage());
                 },
-              )
-              // Row(
-              //   children: [
-              //     Icon(
-              //       Icons.account_circle,
-              //       color: Theme.of(context).colorScheme.primary,
-              //       size: 40,
-              //     ),
-              //     const SizedBox(
-              //       width: 20,
-              //     ),
-              //     Text(
-              //       'Profile',
-              //       style: Theme.of(context).textTheme.titleLarge!.copyWith(
-              //           color: Theme.of(context).colorScheme.onPrimaryContainer),
-              //     ),
-              //   ],
-              // ),
-              ),
-          // DrawerTile(
-          //   title: 'Profile',
-          //   switchPage: () {
-          //     ref.read(pageProvider.notifier).setPage(const MaintenanceProfilePage());
-          //   },
-          // ),
+              )),
           DrawerTile(
             title: 'Fueling Details',
             switchPage: () {
@@ -86,14 +56,6 @@ class FuelingPersonDrawer extends ConsumerWidget {
                   .setPage(const FuelingDetailsPage());
             },
           ),
-          // DrawerTile(
-          //   title: 'Vehicles',
-          //   switchPage: () {
-          //     ref
-          //         .read(pageProvider.notifier)
-          //         .setPage(VehiclesForMaintenancePage());
-          //   },
-          // ),
         ],
       ),
     );
