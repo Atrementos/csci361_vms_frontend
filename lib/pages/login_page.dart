@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:open_file_plus/open_file_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +24,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   bool showPassword = false;
   String _enteredUsername = '';
   String _enteredPassword = '';
+  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+
+  @override
+  void initState() {
+    super.initState();
+    loadJwt();
+  }
+
+  void loadJwt() async {
+    final SharedPreferences newPrefs = await prefs;
+    if (newPrefs.getString('jwt') != null && newPrefs.getString('jwt') != '') {
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
+      final response = await http.get(url, headers: {
+        HttpHeaders.authorizationHeader: 'Bearer ${newPrefs.getString('jwt')}',
+      });
+      if (response.statusCode == 200) {
+        jwt.setJwtToken(newPrefs.getString('jwt')!);
+        ref.read(pageProvider.notifier).setPage(const ProfilePage());
+      }
+    }
+  }
 
   void _authorize(WidgetRef ref) async {
     if (_formKey.currentState!.validate()) {
@@ -47,7 +69,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         return;
       }
       var decodedResponse = json.decode(response.body);
+      print(decodedResponse);
       jwt.setJwtToken(decodedResponse["access_token"]);
+      final newPrefs = await prefs;
+      newPrefs.setString('jwt', decodedResponse["access_token"]);
       ref.read(pageProvider.notifier).setPage(const ProfilePage());
     }
   }

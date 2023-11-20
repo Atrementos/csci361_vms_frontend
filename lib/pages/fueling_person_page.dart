@@ -1,4 +1,3 @@
-// import 'dart:html';
 import 'package:csci361_vms_frontend/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csci361_vms_frontend/main.dart';
-import 'package:csci361_vms_frontend/pages/create_assignment_page.dart';
+import 'package:csci361_vms_frontend/pages/update_assignment_page.dart';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
@@ -25,7 +25,7 @@ class _ProfilePageState extends ConsumerState<MaintenancePersonPage> {
   var _userInfo;
 
   void _loadUser() async {
-    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
+    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
       'Bearer ${ref.read(jwt.jwtTokenProvider)}'
@@ -69,7 +69,7 @@ class _ProfilePageState extends ConsumerState<MaintenancePersonPage> {
               onPressed: () {
                 ref
                     .read(pageProvider.notifier)
-                    .setPage(const CreateMaintenancePage());
+                    .setPage( UpdateAssignmentPage());
               },
               child: const Text('Maintenance Person Profile Page'),
             ),

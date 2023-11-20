@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
+import 'package:csci361_vms_frontend/pages/login_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
-import 'package:csci361_vms_frontend/pages/report_driver_page.dart';
+import 'package:csci361_vms_frontend/pages/report_driver_page_mob.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
@@ -14,6 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../widgets/driver_drawer.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -34,7 +38,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String email = '';
 
   void _loadUser() async {
-    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me');
+    final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
           'Bearer ${ref.read(jwt.jwtTokenProvider)}',
@@ -245,6 +249,16 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               icon: const Icon(Icons.edit),
               label: const Text('Edit'),
             ),
+          TextButton.icon(
+            onPressed: () async {
+              jwt.setJwtToken('');
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('jwt', '');
+              ref.read(pageProvider.notifier).setPage(const LoginPage());
+            },
+            icon: const Icon(Icons.logout),
+            label: const Text('Logout'),
+          ),
         ],
       ),
       body: mainContent,
@@ -252,7 +266,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ? const CircularProgressIndicator()
           : ref.read(userRole.roleProvider) == 'Admin'
               ? const AdminDrawer()
-              : const MaintenanceDrawer(),
+              : ref.read(userRole.roleProvider) == 'Driver'
+                  ? const DriverDrawer()
+                  : const MaintenanceDrawer(),
     );
   }
 }
