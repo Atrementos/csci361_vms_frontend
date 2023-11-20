@@ -188,7 +188,18 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                     );
                   } else {
                     if (currentPage == totalPages) {
-                      return const Text('You have reached the end.');
+                      return Center(
+                        child: Text(
+                          'You have reached the end.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                        ),
+                      );
                     } else {
                       return const Center(
                         child: SizedBox(
