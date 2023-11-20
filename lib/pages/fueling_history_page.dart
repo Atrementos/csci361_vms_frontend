@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
+import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -52,37 +53,51 @@ class _FuelingHistoryPageState extends State<FuelingHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fueling Task History'),
+        title: const Text('Fueling history'),
       ),
-      body: FutureBuilder<List<FuelingTask>>(
-        future: _fuelingTasks,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            final List<FuelingTask> fuelingTasks = snapshot.data ?? [];
-            return ListView.builder(
-              itemCount: fuelingTasks.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                      'Vehicle Model: ${fuelingTasks[index].vehicleModel}'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Fuel Amount: ${fuelingTasks[index].fuelAmount}'),
-                      Text('Fueling Task: ${fuelingTasks[index].fuelingTask}'),
-                    ],
-                  ),
-                );
-              },
-            );
-          }
-        },
+      body: Center(
+        child: Text(
+          'No fueling history yet.',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onBackground,
+              ),
+        ),
       ),
-      drawer: const AdminDrawer(),
+      drawer: const FuelingPersonDrawer(),
     );
+    // Scaffold(
+    //   appBar: AppBar(
+    //     title: const Text('Fueling Task History'),
+    //   ),
+    //   body: FutureBuilder<List<FuelingTask>>(
+    //     future: _fuelingTasks,
+    //     builder: (context, snapshot) {
+    //       if (snapshot.connectionState == ConnectionState.waiting) {
+    //         return const Center(child: CircularProgressIndicator());
+    //       } else if (snapshot.hasError) {
+    //         return Center(child: Text('Error: ${snapshot.error}'));
+    //       } else {
+    //         final List<FuelingTask> fuelingTasks = snapshot.data ?? [];
+    //         return ListView.builder(
+    //           itemCount: fuelingTasks.length,
+    //           itemBuilder: (context, index) {
+    //             return ListTile(
+    //               title: Text(
+    //                   'Vehicle Model: ${fuelingTasks[index].vehicleModel}'),
+    //               subtitle: Column(
+    //                 crossAxisAlignment: CrossAxisAlignment.start,
+    //                 children: [
+    //                   Text('Fuel Amount: ${fuelingTasks[index].fuelAmount}'),
+    //                   Text('Fueling Task: ${fuelingTasks[index].fuelingTask}'),
+    //                 ],
+    //               ),
+    //             );
+    //           },
+    //         );
+    //       }
+    //     },
+    //   ),
+    //   drawer: const AdminDrawer(),
+    // );
   }
 }
