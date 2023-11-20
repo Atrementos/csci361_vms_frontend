@@ -1,5 +1,5 @@
-import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
+import 'package:csci361_vms_frontend/pages/vehicles_for_fueling.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,11 +49,11 @@ class FuelingPersonDrawer extends ConsumerWidget {
                 },
               )),
           DrawerTile(
-            title: 'Fueling Details',
+            title: 'Vehicles List',
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
-                  .setPage(const FuelingDetailsPage());
+                  .setPage(const VehicleForFuelingPage());
             },
           ),
         ],

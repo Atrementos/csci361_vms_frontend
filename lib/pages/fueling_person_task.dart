@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class FuelingDetailsPage extends StatefulWidget {
-  final Vehicle? vehicle; // Make the Vehicle parameter nullable
+  final Vehicle vehicle; // Make the Vehicle parameter nullable
 
-  const FuelingDetailsPage({Key? key, this.vehicle}) : super(key: key);
+  const FuelingDetailsPage({Key? key, required this.vehicle}) : super(key: key);
 
   @override
   _FuelingDetailsPageState createState() => _FuelingDetailsPageState();
@@ -155,7 +155,6 @@ class _FuelingDetailsPageState extends State<FuelingDetailsPage> {
           ],
         ),
       ),
-      drawer: const FuelingPersonDrawer(),
     );
   }
 }
