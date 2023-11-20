@@ -50,7 +50,7 @@ class MaintenanceDrawer extends ConsumerWidget {
                 },
               )),
           DrawerTile(
-            title: 'Create new job assignment',
+            title: 'View Assignments',
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
