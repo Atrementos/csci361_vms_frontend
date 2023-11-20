@@ -197,7 +197,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          if (_userInfo == null || !editMode)
+          if (_userInfo != null && !editMode)
             TextButton.icon(
               onPressed: () {
                 setState(() {
@@ -207,16 +207,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               icon: const Icon(Icons.edit),
               label: const Text('Edit'),
             ),
-          TextButton.icon(
-            onPressed: () async {
-              jwt.setJwtToken('');
-              final prefs = await SharedPreferences.getInstance();
-              prefs.setString('jwt', '');
-              ref.read(pageProvider.notifier).setPage(const LoginPage());
-            },
-            icon: const Icon(Icons.logout),
-            label: const Text('Logout'),
-          ),
+          if (_userInfo != null)
+            TextButton.icon(
+              onPressed: () async {
+                jwt.setJwtToken('');
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setString('jwt', '');
+                ref.read(pageProvider.notifier).setPage(const LoginPage());
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text('Logout'),
+            ),
         ],
       ),
       body: mainContent,
