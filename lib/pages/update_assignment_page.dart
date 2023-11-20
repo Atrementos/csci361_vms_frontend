@@ -12,7 +12,8 @@ class UpdateAssignmentPage extends ConsumerStatefulWidget {
   const UpdateAssignmentPage({Key? key}) : super(key: key);
 
   @override
-  _UpdateAssignmentPageState createState() => _UpdateAssignmentPageState();
+  ConsumerState<UpdateAssignmentPage> createState() =>
+      _UpdateAssignmentPageState();
 }
 
 class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
@@ -43,7 +44,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
         Uri.http('vms-api.madi-wka.xyz', '/maintenancejob/'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         },
       );
       print('Response status: ${response.statusCode}');
@@ -78,14 +79,13 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
             padding: const EdgeInsets.all(12),
             child: Form(
               key: formKey,
-              child: Column(
+              child: const Column(
                 children: [
                   // Your form fields go here if needed
                 ],
               ),
             ),
           ),
-
           Expanded(
             child: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
@@ -106,16 +106,20 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
                             searchResults[index].vehicle != null
-                                ? searchResults[index].vehicle!.id?.toString() ?? 'N/A'
+                                ? searchResults[index]
+                                        .vehicle!
+                                        .id
+                                        ?.toString() ??
+                                    'N/A'
                                 : 'N/A',
                           ),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -126,7 +130,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                     ),
                     subtitle: Row(
                       children: [
-                        Align(
+                        const Align(
                           alignment: Alignment.center,
                           child: Text('Completed: '),
                         ),
@@ -138,7 +142,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                               searchResults[index].completed = value ?? false;
                             });
                           },
-                          items: [
+                          items: const [
                             DropdownMenuItem<bool>(
                               value: true,
                               child: Text('Yes'),
@@ -174,6 +178,4 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
       ),
     );
   }
-
-
 }

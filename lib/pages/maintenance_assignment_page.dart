@@ -6,7 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class MaintenanceAssignmentPage extends StatefulWidget {
-  const MaintenanceAssignmentPage({Key? key, required this.maintenanceAssignment})
+  const MaintenanceAssignmentPage(
+      {Key? key, required this.maintenanceAssignment})
       : super(key: key);
   final MaintenanceAssignment maintenanceAssignment;
 
@@ -72,8 +73,8 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
           Text(
             'Add a car part to repair',
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
           ),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -131,8 +132,7 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
             onPressed: _addCarPart,
             child: const Text('Add Car Part'),
           ),
-          if (_selectedImage != null)
-            Image.file(_selectedImage!),
+          if (_selectedImage != null) Image.file(_selectedImage!),
           Expanded(
             child: ListView.builder(
               itemCount: _carParts.length,

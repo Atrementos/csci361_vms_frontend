@@ -1,32 +1,17 @@
 import 'package:csci361_vms_frontend/pages/create_user_page.dart';
-import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
-import 'package:csci361_vms_frontend/pages/drivers_page.dart';
 import 'package:csci361_vms_frontend/pages/search_all_page.dart';
-import 'package:csci361_vms_frontend/pages/test_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
-import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
-import 'package:csci361_vms_frontend/providers/role_provider.dart';
-
-import 'driver_drawer.dart';
 
 class AdminDrawer extends ConsumerWidget {
   const AdminDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-//redirect to non-admin drawer if not admin
-    if (ref.read(userRole.roleProvider) != 'Admin') {
-      if (ref.read(userRole.roleProvider) == 'Maintenance') {
-        return const MaintenanceDrawer();
-      } else if (ref.read(userRole.roleProvider) == 'Driver') {
-        return const DriverDrawer();
-      }
-    }
     return Drawer(
       child: Column(
         children: [
@@ -68,21 +53,7 @@ class AdminDrawer extends ConsumerWidget {
           DrawerTile(
             title: 'Vehicles',
             switchPage: () {
-              ref.read(pageProvider.notifier).setPage(VehiclesPage());
-            },
-          ),
-          DrawerTile(
-            title: 'Drivers',
-            switchPage: () {
-              ref.read(pageProvider.notifier).setPage(const DriversPage());
-            },
-          ),
-          DrawerTile(
-            title: 'Fueling persons',
-            switchPage: () {
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(const FuelingPersonsPage());
+              ref.read(pageProvider.notifier).setPage(const VehiclesPage());
             },
           ),
           DrawerTile(
@@ -95,16 +66,6 @@ class AdminDrawer extends ConsumerWidget {
             title: 'Create a user',
             switchPage: () {
               ref.read(pageProvider.notifier).setPage(const CreateUserPage());
-            },
-          ),
-          DrawerTile(
-            title: 'Test page',
-            switchPage: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) {
-                  return const TestPage();
-                }),
-              );
             },
           ),
         ],

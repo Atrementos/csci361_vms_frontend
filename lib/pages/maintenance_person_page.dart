@@ -1,14 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:csci361_vms_frontend/main.dart';
 import 'package:csci361_vms_frontend/pages/update_assignment_page.dart';
-import 'package:csci361_vms_frontend/pages/driver_page.dart';
-import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
-import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
-import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +23,7 @@ class _ProfilePageState extends ConsumerState<MaintenancePersonPage> {
     final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
-      'Bearer ${ref.read(jwt.jwtTokenProvider)}'
+          'Bearer ${ref.read(jwt.jwtTokenProvider)}'
     });
     var decodedResponse = json.decode(response.body);
     print(decodedResponse);
@@ -61,15 +56,12 @@ class _ProfilePageState extends ConsumerState<MaintenancePersonPage> {
               Text(
                 '${info.key}: ${info.value}',
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
               ),
-
             TextButton(
               onPressed: () {
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage( UpdateAssignmentPage());
+                ref.read(pageProvider.notifier).setPage(UpdateAssignmentPage());
               },
               child: const Text('Maintenance Person Profile Page'),
             ),

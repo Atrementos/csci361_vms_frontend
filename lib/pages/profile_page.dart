@@ -1,15 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:csci361_vms_frontend/pages/driver_page.dart';
-import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
 import 'package:csci361_vms_frontend/pages/login_page.dart';
-import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
-import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
-import 'package:csci361_vms_frontend/pages/report_driver_page_mob.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
+import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -192,44 +188,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage(const FuelingPersonPage());
-              },
-              child: const Text('Fueling Person Profile Page'),
-            ),
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage(const MaintenancePersonPage());
-              },
-              child: const Text('Maintenance Person Profile Page'),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(pageProvider.notifier).setPage(const DriverPage());
-              },
-              child: const Text('Driver Profile Page'),
-            ),
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage(const ReportDriverPage(driverId: 2));
-              },
-              child: const Text('Driver Report Page test'),
-            ),
-            TextButton(
-              onPressed: () {
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage(const FuelingDetailsPage());
-              },
-              child: const Text('Add fueling task page'),
-            ),
           ],
         ),
       );
@@ -268,7 +226,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ? const AdminDrawer()
               : ref.read(userRole.roleProvider) == 'Driver'
                   ? const DriverDrawer()
-                  : const MaintenanceDrawer(),
+                  : ref.read(userRole.roleProvider) == 'Fueling'
+                      ? const FuelingPersonDrawer()
+                      : const MaintenanceDrawer(),
     );
   }
 }
