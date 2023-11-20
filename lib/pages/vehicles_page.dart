@@ -44,7 +44,7 @@ class _VehiclesPageState extends ConsumerState<VehiclesPage> {
         "Type": _type,
       };
 
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle');
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle/');
       var response =
           await http.post(url, body: jsonEncode(queryParams), headers: {
         HttpHeaders.authorizationHeader:

@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-// import 'dart:html' as html;
 
 class ReportDriverPage extends ConsumerStatefulWidget {
   final int driverId;
@@ -49,22 +46,6 @@ class _ReportDriverPageState extends ConsumerState<ReportDriverPage> {
   }
 
   void _openFileFromBytes(Uint8List bytes) async {
-    // if (kIsWeb) {
-    //   final _base64 = base64Encode(bytes);
-    //   // Create the link with the file
-    //   final anchor =
-    //       AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
-    //         ..target = 'blank';
-    //   // add the name
-
-    //   anchor.download = 'report.pdf';
-
-    //   // trigger download
-    //   document.body?.append(anchor);
-    //   anchor.click();
-    //   anchor.remove();
-    //   return;
-    // }
     final tempDir = await getTemporaryDirectory();
     final file = await File('${tempDir.path}/report.pdf').create();
     await file.writeAsBytes(bytes);

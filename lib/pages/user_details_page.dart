@@ -82,7 +82,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
         'vms-api.madi-wka.xyz',
         '/user/${widget.userId}',
       );
-      print(url);
       final response = await http.put(
         url,
         body: json.encode(postBody),
@@ -92,8 +91,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
           'Content-Type': 'application/json',
         },
       );
-      print(response.statusCode);
-      print(response.body);
       if (response.statusCode == 202) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -340,26 +337,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                         ),
                       ],
                     ),
-                    // if (userInfo!['Role'] == 'Driver')
-                    //   const SizedBox(
-                    //     height: 12,
-                    //   ),
-                    // if (userInfo!['Role'] == 'Driver')
-                    //   TextFormField(
-                    //     validator: (value) {
-                    //       if (value == null ||
-                    //           !RegExp(r'^[A-Z0-9]{8,20}$').hasMatch(value)) {
-                    //         return 'Incorrect license number format';
-                    //       }
-                    //       return null;
-                    //     },
-                    //     onSaved: (newValue) {
-                    //       licenseNumber = newValue!;
-                    //     },
-                    //     decoration: const InputDecoration(
-                    //       label: Text('Driving license number'),
-                    //     ),
-                    //   ),
                     if (editMode)
                       const SizedBox(
                         height: 12,
@@ -413,13 +390,6 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
               label: const Text('Give a task'),
             ),
           if (isAdmin && role == 'Driver')
-            // TextButton.icon(
-            //   onPressed: () {
-            //     openReportPage();
-            //   },
-            //   icon: const Icon(Icons.receipt_long),
-            //   label: const Text('Get a report'),
-            // ),
             ReportDriverPage(driverId: widget.userId),
           if (isAdmin && !editMode)
             TextButton.icon(

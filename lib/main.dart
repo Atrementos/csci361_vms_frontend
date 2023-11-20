@@ -4,15 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 
-final theme = ThemeData.dark().copyWith(
+final theme = ThemeData.light().copyWith(
   useMaterial3: true,
-  textTheme: GoogleFonts.robotoTextTheme(),
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color.fromARGB(255, 255, 151, 151),
-    brightness: Brightness.dark,
-    surface: const Color.fromARGB(255, 76, 45, 45),
+  textTheme: GoogleFonts.robotoTextTheme().copyWith(
+    bodyLarge: const TextStyle(color: Colors.white),
   ),
-  scaffoldBackgroundColor: const Color.fromARGB(255, 102, 60, 60),
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color.fromARGB(255, 191, 255, 241),
+    brightness: Brightness.dark,
+    surface: const Color.fromARGB(255, 33, 41, 34),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 45, 57, 47),
 );
 
 void main() {

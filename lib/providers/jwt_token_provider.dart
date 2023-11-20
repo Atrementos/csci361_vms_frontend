@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final jwt = JwtToken();
+
 class JwtToken {
   late Provider<String> jwtTokenProvider;
 
@@ -7,5 +9,3 @@ class JwtToken {
     jwtTokenProvider = Provider((ref) => jwt);
   }
 }
-
-final jwt = JwtToken();
