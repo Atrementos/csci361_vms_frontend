@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -20,9 +21,11 @@ class _MapPageState extends State<MapPage> {
   late LocationData currentLocation;
   Location location = Location();
   Set<Marker> markers = <Marker>{};
+  StreamSubscription? locationSubsciption;
 
   Future<List<Vehicle>> fetchVehicleModels() async {
-    final response = await http.get(Uri.http('vms-api.madi-wka.xyz', '/vehicle/'));
+    final response =
+        await http.get(Uri.http('vms-api.madi-wka.xyz', '/vehicle/'));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       return data.map((json) {
@@ -36,13 +39,20 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    location.onLocationChanged.listen((LocationData cLoc) {
-      setState(() {
-        currentLocation = cLoc;
+    if (locationSubsciption == null) {
+      locationSubsciption =
+          location.onLocationChanged.listen((LocationData cLoc) {
+        if (context.mounted) {
+          setState(() {
+            currentLocation = cLoc;
+            updateMarkers();
+          });
+        }
         updateMarkers();
       });
-      updateMarkers();
-    });
+    } else {
+      locationSubsciption!.resume();
+    }
     fetchVehicleModels().then((vehicles) async {
       BitmapDescriptor markerbitmap = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(),
@@ -57,7 +67,8 @@ class _MapPageState extends State<MapPage> {
               double.parse(vehicle.currentLocation.elementAt(1)),
             ),
             infoWindow: InfoWindow(
-              title: 'Vehicle id: ${vehicle.vehicleId}, Model: ${vehicle.model}, License Plate: ${vehicle.licensePlate}',
+              title:
+                  'Vehicle id: ${vehicle.vehicleId}, Model: ${vehicle.model}, License Plate: ${vehicle.licensePlate}',
             ),
             icon: markerbitmap,
           );
@@ -75,6 +86,12 @@ class _MapPageState extends State<MapPage> {
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    locationSubsciption!.pause();
+    super.dispose();
   }
 
   @override
@@ -98,4 +115,3 @@ class _MapPageState extends State<MapPage> {
     );
   }
 }
-
