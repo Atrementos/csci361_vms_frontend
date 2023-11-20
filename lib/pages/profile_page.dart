@@ -12,6 +12,7 @@ import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:http/http.dart' as http;
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -221,7 +222,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               onPressed: () {
                 ref
                     .read(pageProvider.notifier)
-                    .setPage(const FuelingVehiclesPage());
+                    .setPage(const FuelingDetailsPage());
               },
               child: const Text('Add fueling task page'),
             ),
