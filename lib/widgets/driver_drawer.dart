@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 
+import '../pages/current_assignments_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/vehicle_for_driver.dart';
 
@@ -58,6 +59,13 @@ class DriverDrawer extends ConsumerWidget {
             switchPage: () {
               // Change this to the appropriate page
               ref.read(pageProvider.notifier).setPage(const DriverHistoryPage());
+            },
+          ),
+          DrawerTile(
+            title: 'Current Assignments',
+            switchPage: () {
+              // Change this to the appropriate page
+              ref.read(pageProvider.notifier).setPage(const CurrentAssignmentPage());
             },
           ),
         ],

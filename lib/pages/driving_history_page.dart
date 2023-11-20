@@ -1,6 +1,8 @@
 import 'package:csci361_vms_frontend/widgets/driver_drawer.dart';
 import 'package:flutter/material.dart';
 
+import '../models/driver_assignment.dart';
+
 class DriverHistoryPage extends StatefulWidget {
   const DriverHistoryPage({Key? key}) : super(key: key);
 
@@ -9,8 +11,8 @@ class DriverHistoryPage extends StatefulWidget {
 }
 
 class _DriverHistoryPageState extends State<DriverHistoryPage> {
-  List<DriverHistory> driverHistoryList = [
-    DriverHistory(
+  List<DriverAssignment> driverHistoryList = [
+    DriverAssignment(
       description: "Go drift around mega",
       status: "Pending",
       startLocation: [29.0, 12.0],
@@ -19,16 +21,16 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
       distanceCovered: null,
       endDateTime: null,
     ),
-    DriverHistory(
+    DriverAssignment(
       description: "Go buy chocolate",
-      status: "Pending",
+      status: "Active",
       startLocation: [51.0, 71.0],
       endLocation: [52.0, 72.0],
       startDateTime: null,
       distanceCovered: null,
       endDateTime: null,
     ),
-    DriverHistory(
+    DriverAssignment(
       description: "Drive listening to 2Pac",
       status: "Pending",
       startLocation: [53.0, 74.0],
@@ -88,7 +90,7 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
 
   Widget _buildDriverHistoryList() {
     // Filter the driver history based on the search query
-    List<DriverHistory> filteredHistory = driverHistoryList
+    List<DriverAssignment> filteredHistory = driverHistoryList
         .where((history) =>
     history.description.contains(searchQuery) ||
         history.status.contains(searchQuery))
@@ -98,18 +100,28 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
       child: ListView.builder(
         itemCount: filteredHistory.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('Description: ${filteredHistory[index].description}'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Start Location: ${filteredHistory[index].startLocation}'),
-                Text('End Location: ${filteredHistory[index].endLocation}'),
-                Text('Distance Covered: ${filteredHistory[index].distanceCovered}'),
-                Text('Status: ${filteredHistory[index].status}'),
-                Text('Start DateTime: ${filteredHistory[index].startDateTime}'),
-                Text('End DateTime: ${filteredHistory[index].endDateTime}'),
-              ],
+          return Card(
+            margin: const EdgeInsets.all(8.0),
+            child: ListTile(
+              title: Text(
+                'Description: ${filteredHistory[index].description}',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Start Location: ${filteredHistory[index].startLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    Text('End Location: ${filteredHistory[index].endLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    Text('Distance Covered: ${filteredHistory[index].distanceCovered}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    Text('Status: ${filteredHistory[index].status}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    Text('Start DateTime: ${filteredHistory[index].startDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    Text('End DateTime: ${filteredHistory[index].endDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                  ],
+                ),
+              ),
             ),
           );
         },
@@ -118,24 +130,5 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
   }
 }
 
-class DriverHistory {
-  final String description;
-  final List<double> startLocation;
-  final List<double> endLocation;
-  final int? distanceCovered;
-  final String status;
-  final DateTime? startDateTime;
-  final DateTime? endDateTime;
-
-  DriverHistory({
-    required this.description,
-    required this.startLocation,
-    required this.endLocation,
-    required this.distanceCovered,
-    required this.status,
-    required this.startDateTime,
-    required this.endDateTime,
-  });
-}
 
 
