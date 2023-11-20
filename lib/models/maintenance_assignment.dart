@@ -19,6 +19,20 @@ class MaintenanceAssignment {
     required this.completed,
 
   });
+
+  factory MaintenanceAssignment.fromJson(Map<String, dynamic> json) {
+    return MaintenanceAssignment(
+      id: json['id'],
+      description: json['description'],
+      vehicle: json['vehicle'],
+      date: DateTime.parse(json['date']),
+      carPartsList: json['carPart'],
+      totalCost: json['repairingCost'].toDouble(),
+      completed: json['status'],
+      assignedTo: json['assignedTo']
+      // Map other JSON properties to class properties...
+    );
+  }
 }
 
 class CarPart {

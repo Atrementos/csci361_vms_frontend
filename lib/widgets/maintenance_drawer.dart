@@ -1,4 +1,4 @@
-import 'package:csci361_vms_frontend/pages/create_assignment_page.dart';
+import 'package:csci361_vms_frontend/pages/update_assignment_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_profile_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
@@ -83,7 +83,7 @@ class MaintenanceDrawer extends ConsumerWidget {
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
-                  .setPage(const CreateMaintenancePage());
+                  .setPage( UpdateAssignmentPage());
             },
           ),
           DrawerTile(
