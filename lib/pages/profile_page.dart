@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/pages/driver_page.dart';
 import 'package:csci361_vms_frontend/pages/fueling_person_page.dart';
+import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_person_page.dart';
 import 'package:csci361_vms_frontend/pages/report_driver_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
@@ -215,6 +216,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     .setPage(const ReportDriverPage(driverId: 2));
               },
               child: const Text('Driver Report Page test'),
+            ),
+            TextButton(
+              onPressed: () {
+                ref
+                    .read(pageProvider.notifier)
+                    .setPage(const FuelingVehiclesPage());
+              },
+              child: const Text('Add fueling task page'),
             ),
           ],
         ),
