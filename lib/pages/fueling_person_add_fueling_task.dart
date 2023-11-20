@@ -1,44 +1,43 @@
 import 'package:csci361_vms_frontend/models/user.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
+import 'package:flutter/material.dart';
 
-class FuelingPersonPage extends StatefulWidget {
-  const FuelingPersonPage({super.key});
+class AddFueling extends StatefulWidget {
+  const AddFueling({super.key});
 
   @override
-  State<FuelingPersonPage> createState() => _FuelingPersonState();
+  State<AddFueling> createState() => _AddFuelingState();
 }
 
-class _FuelingPersonState extends State<FuelingPersonPage> {
-  List<Driver> _registeredFuelingPersons = [];
+class _AddFuelingState extends State<AddFueling> {
+  List<Driver> _registeredDrivers = [];
   final _formKey = GlobalKey<FormState>();
 
-  final imagepicker = ImagePicker();
+  void _addDriver() {}
 
-  get image => null;
-  void _addFuelingPerson() {}
+  void loadDrivers() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fueling Person'),
+        title: const Text('Drivers Page'),
       ),
-      body: Column(children: [
-        const SizedBox(
-          height: 6,
-        ),
-        Text(
-          'Update information on fueling vehicles',
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Form(
-            key: _formKey,
-            child: Expanded(
+      body: Column(
+        children: [
+          const SizedBox(
+            height: 6,
+          ),
+          Text(
+            'Add a new driver here',
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Form(
+              key: _formKey,
               child: Column(
                 children: [
                   Row(
@@ -46,7 +45,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Car plate information'),
+                            label: Text('First Name'),
                           ),
                         ),
                       ),
@@ -56,7 +55,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Date'),
+                            label: Text('Last Name'),
                           ),
                         ),
                       ),
@@ -68,7 +67,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                         child: TextFormField(
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            label: Text('Time'),
+                            label: Text('Government ID'),
                           ),
                         ),
                       ),
@@ -78,7 +77,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Driver information'),
+                            label: Text('Middle Name'),
                           ),
                         ),
                       ),
@@ -90,7 +89,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                         child: TextFormField(
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            label: Text('Amount of fuel'),
+                            label: Text('Phone Number'),
                           ),
                         ),
                       ),
@@ -100,7 +99,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Total cost of fuel'),
+                            label: Text('Role'),
                           ),
                         ),
                       ),
@@ -114,7 +113,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Gas station name'),
+                            label: Text('Email'),
                           ),
                         ),
                       ),
@@ -124,7 +123,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                       Expanded(
                         child: TextFormField(
                           decoration: const InputDecoration(
-                            label: Text('Fueling person name'),
+                            label: Text('Password'),
                           ),
                         ),
                       ),
@@ -143,40 +142,67 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
                         child: const Text('Reset'),
                       ),
                       ElevatedButton(
-                        onPressed: _addFuelingPerson,
+                        onPressed: _addDriver,
                         child: const Text('Add'),
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          imagepicker.pickImage(source: ImageSource.gallery);
-                        },
-                        child: Text('Upload Photo Before Fueling'),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          imagepicker.pickImage(source: ImageSource.gallery);
-                        },
-                        child: Text('Upload Photo After Fueling'),
-                      )
-                    ],
-                  )
                 ],
               ),
             ),
           ),
-        ),
-      ]),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _registeredDrivers.length,
+              itemBuilder: (context, index) {
+                return const Row(
+                  children: [
+                    Text('Driver name'),
+                    Text('Driver last name'),
+                    Text('Driver ID')
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
       drawer: const AdminDrawer(),
     );
   }
 }
+
+
+// Widget build(BuildContext context) {
+//     // ... Existing code ...
+
+//     return ListView.builder(
+//       itemCount: vehicles.length,
+//       itemBuilder: (context, index) {
+//         return Column(
+//           children: [
+//             ListTile(
+//               leading: Text(
+//                 vehicles[index].licensePlate,
+//               ),
+//               title: Text(
+//                 '${vehicles[index].model} (${vehicles[index].year})',
+//               ),
+//               trailing: ElevatedButton(
+//                 onPressed: () {
+//                   Navigator.of(context).push(
+//                     MaterialPageRoute(
+//                       builder: (context) => VehicleDetailsPage(vehicle: vehicles[index]),
+//                     ),
+//                   );
+//                 },
+//                 child: const Text('Change'),
+//               ),
+//             ),
+//             const Divider(), // Add a divider between each set of vehicle and button
+//           ],
+//         );
+//       },
+//     );
+// }
+

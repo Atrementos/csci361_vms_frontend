@@ -1,11 +1,11 @@
 class MaintenanceAssignment {
   final int id;
   final String description;
-  final DateTime date;
+  final DateTime? date;
   final List<CarPart> carPartsList;
   final double totalCost;
-  final Vehicle vehicle;
-  final Assignee assignedTo;
+  final Vehicle? vehicle;
+  final Assignee? assignedTo;
   bool completed = false;
 
   MaintenanceAssignment({
@@ -17,8 +17,22 @@ class MaintenanceAssignment {
     required this.vehicle,
     required this.assignedTo,
     required this.completed,
-
   });
+
+  factory MaintenanceAssignment.fromJson(Map<String, dynamic> json) {
+    return MaintenanceAssignment(
+      id: json['Id'] ?? 0,
+      description: json['Description'] ?? 'N/A',
+      vehicle: json['Vehicle'] != null ? Vehicle.fromJson(json['Vehicle']) : null,
+      date: json['Date'] != null ? DateTime.parse(json['Date']) : null,
+      carPartsList: (json['CarPartsList'] as List<dynamic>?)
+          ?.map((part) => CarPart.fromJson(part))
+          .toList() ?? [],
+      totalCost: json['TotalCost']?.toDouble() ?? 0.0,
+      completed: json['Status'] == 'Completed',
+      assignedTo: json['AssignedTo'] != null ? Assignee.fromJson(json['AssignedTo']) : null,
+    );
+  }
 }
 
 class CarPart {
@@ -37,6 +51,17 @@ class CarPart {
     required this.cost,
     required this.image,
   });
+
+  factory CarPart.fromJson(Map<String, dynamic> json) {
+    return CarPart(
+      parentId: json['ParentId'] ?? 0,
+      name: json['Name'] ?? 'N/A',
+      number: json['Number'] ?? 'N/A',
+      condition: json['Condition'] ?? 'N/A',
+      cost: json['Cost']?.toDouble() ?? 0.0,
+      image: json['Image'] ?? 'N/A',
+    );
+  }
 }
 
 class Vehicle {
@@ -67,6 +92,27 @@ class Vehicle {
     required this.capacity,
     required this.status,
   });
+
+  factory Vehicle.fromJson(Map<String, dynamic> json) {
+    return Vehicle(
+      id: json['Id'] ?? 0,
+      model: json['Model'] ?? 'N/A',
+      year: json['Year'] ?? 0,
+      licensePlate: json['LicensePlate'] ?? 'N/A',
+      mileage: json['Mileage'] ?? 0,
+      currentLocation: (json['CurrentLocation'] as List<dynamic>?)
+          ?.map((location) => location.toString())
+          .toList() ?? [],
+      fuel: json['Fuel']?.toDouble() ?? 0.0,
+      type: json['Type'] ?? 'N/A',
+      driverHistory: (json['DriverHistory'] as List<dynamic>?)
+          ?.map((history) => history as int)
+          .toList() ?? [],
+      assignedDriver: json['AssignedDriver'] != null ? Driver.fromJson(json['AssignedDriver']) : Driver(id: 0, name: 'N/A', middleName: 'N/A', lastName: 'N/A', contactNumber: 'N/A', governmentId: 'N/A', address: 'N/A', email: 'N/A', role: 'N/A', drivingLicenseNumber: 'N/A'),
+      capacity: json['Capacity'] ?? 0,
+      status: json['Status'] ?? 'N/A',
+    );
+  }
 }
 
 class Driver {
@@ -93,6 +139,21 @@ class Driver {
     required this.role,
     required this.drivingLicenseNumber,
   });
+
+  factory Driver.fromJson(Map<String, dynamic> json) {
+    return Driver(
+      id: json['Id'] ?? 0,
+      name: json['Name'] ?? 'N/A',
+      middleName: json['MiddleName'] ?? 'N/A',
+      lastName: json['LastName'] ?? 'N/A',
+      contactNumber: json['ContactNumber'] ?? 'N/A',
+      governmentId: json['GovernmentId'] ?? 'N/A',
+      address: json['Address'] ?? 'N/A',
+      email: json['Email'] ?? 'N/A',
+      role: json['Role'] ?? 'N/A',
+      drivingLicenseNumber: json['DrivingLicenseNumber'] ?? 'N/A',
+    );
+  }
 }
 
 class Assignee {
@@ -117,4 +178,18 @@ class Assignee {
     required this.email,
     required this.role,
   });
+
+  factory Assignee.fromJson(Map<String, dynamic> json) {
+    return Assignee(
+      id: json['Id'] ?? 0,
+      name: json['Name'] ?? 'N/A',
+      middleName: json['MiddleName'] ?? 'N/A',
+      lastName: json['LastName'] ?? 'N/A',
+      contactNumber: json['ContactNumber'] ?? 'N/A',
+      governmentId: json['GovernmentId'] ?? 'N/A',
+      address: json['Address'] ?? 'N/A',
+      email: json['Email'] ?? 'N/A',
+      role: json['Role'] ?? 'N/A',
+    );
+  }
 }

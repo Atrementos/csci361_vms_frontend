@@ -1,4 +1,4 @@
-import 'package:csci361_vms_frontend/pages/update_assignment_page.dart';
+import 'package:csci361_vms_frontend/pages/fueling_person_task.dart';
 import 'package:csci361_vms_frontend/pages/fueling_persons_page.dart';
 import 'package:csci361_vms_frontend/pages/maintenance_profile_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 
-class MaintenanceDrawer extends ConsumerWidget {
-  const MaintenanceDrawer({super.key});
+class FuelingPersonDrawer extends ConsumerWidget {
+  const FuelingPersonDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -79,19 +79,21 @@ class MaintenanceDrawer extends ConsumerWidget {
           //   },
           // ),
           DrawerTile(
-            title: 'Create new job assignment',
+            title: 'Fueling Details',
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
-                  .setPage( UpdateAssignmentPage());
+                  .setPage(const FuelingDetailsPage());
             },
           ),
-          DrawerTile(
-            title: 'Vehicles',
-            switchPage: () {
-              ref.read(pageProvider.notifier).setPage(VehiclesPage());
-            },
-          ),
+          // DrawerTile(
+          //   title: 'Vehicles',
+          //   switchPage: () {
+          //     ref
+          //         .read(pageProvider.notifier)
+          //         .setPage(VehiclesForMaintenancePage());
+          //   },
+          // ),
         ],
       ),
     );
