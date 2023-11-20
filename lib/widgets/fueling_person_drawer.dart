@@ -1,3 +1,4 @@
+import 'package:csci361_vms_frontend/pages/fueling_history_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_for_fueling.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
@@ -54,6 +55,14 @@ class FuelingPersonDrawer extends ConsumerWidget {
               ref
                   .read(pageProvider.notifier)
                   .setPage(const VehicleForFuelingPage());
+            },
+          ),
+          DrawerTile(
+            title: 'Fueling History',
+            switchPage: () {
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(const FuelingHistoryPage());
             },
           ),
         ],
