@@ -221,7 +221,7 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
                       );
                     },
                   ),
-                  const Text('Show password'),
+                  const Text('Show password', style: TextStyle(color: Colors.white70)),
                 ],
               ),
               const SizedBox(
@@ -256,13 +256,13 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
                     flex: 2,
                     child: DropdownButtonFormField(
                       decoration: const InputDecoration(
-                        label: Text('Role'),
+                        label: Text('Role', style: TextStyle(color: Colors.white70)),
                       ),
                       items: [
                         for (final role in allRoles)
                           DropdownMenuItem(
                             value: role,
-                            child: Text(role),
+                            child: Text(role, style: const TextStyle(color: Colors.white70)),
                           ),
                       ],
                       onChanged: (value) {
@@ -271,6 +271,7 @@ class _CreateUserPageState extends ConsumerState<CreateUserPage> {
                         });
                       },
                       value: selectedRole,
+                      dropdownColor: const Color.fromARGB(255, 33, 41, 34),
                     ),
                   ),
                 ],

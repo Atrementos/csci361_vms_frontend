@@ -5,9 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+import '../providers/role_provider.dart';
+import '../widgets/admin_drawer.dart';
+import '../widgets/driver_drawer.dart';
+import '../widgets/fueling_person_drawer.dart';
+import '../widgets/maintenance_drawer.dart';
+
 class VehicleDetailsPage extends ConsumerStatefulWidget {
   final int vehicleId;
-
   const VehicleDetailsPage({super.key, required this.vehicleId});
 
   @override
@@ -30,8 +35,8 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
     final url =
         Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
     final response = await http.get(url);
-    print(response.statusCode);
-    print(response.body);
+    // print(response.statusCode);
+    // print(response.body);
     var decodedResponse = json.decode(response.body);
     setState(() {
       currentVehicle = Vehicle.fromJson(decodedResponse);
@@ -122,12 +127,21 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Colors.white70,
                             fontSize: 24,
-                          ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
+      ),
+      drawer: ref.read(userRole.roleProvider) == null
+          ? const CircularProgressIndicator()
+          : ref.read(userRole.roleProvider) == 'Admin'
+          ? const AdminDrawer()
+          : ref.read(userRole.roleProvider) == 'Driver'
+          ? const DriverDrawer()
+          : ref.read(userRole.roleProvider) == 'Fueling'
+          ? const FuelingPersonDrawer()
+          : const MaintenanceDrawer(),
     );
   }
 }

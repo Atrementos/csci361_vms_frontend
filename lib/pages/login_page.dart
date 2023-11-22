@@ -139,7 +139,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           showPassword = value!;
                         });
                       }),
-                  const Text('Show password'),
+                  const Text('Show password', style: TextStyle(color: Colors.white70)),
                 ],
               ),
               const SizedBox(

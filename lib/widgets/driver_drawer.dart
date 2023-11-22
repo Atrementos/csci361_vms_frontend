@@ -1,4 +1,5 @@
 import 'package:csci361_vms_frontend/pages/driving_history_page.dart';
+import 'package:csci361_vms_frontend/pages/vehicle_details_page.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:csci361_vms_frontend/providers/page_provider.dart';
 
 import '../pages/current_assignments_page.dart';
 import '../pages/profile_page.dart';
-import '../pages/vehicle_for_driver.dart';
+import '../providers/id_provider.dart';
 
 class DriverDrawer extends ConsumerWidget {
   const DriverDrawer({Key? key});
@@ -62,7 +63,9 @@ class DriverDrawer extends ConsumerWidget {
               ),
               onTap: () {
                 Navigator.of(context).pop();
-                ref.read(pageProvider.notifier).setPage(const ProfilePage());
+                ref
+                    .read(pageProvider.notifier)
+                    .setPage(const ProfilePage());
               },
             ),
           ),
@@ -70,7 +73,9 @@ class DriverDrawer extends ConsumerWidget {
             title: 'Vehicle Detail',
             switchPage: () {
               // Change this to the appropriate page
-              ref.read(pageProvider.notifier).setPage(VehiclePage());
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(VehicleDetailsPage(vehicleId: ref.read(userId.idProvider)));
             },
           ),
           DrawerTile(
@@ -79,7 +84,7 @@ class DriverDrawer extends ConsumerWidget {
               // Change this to the appropriate page
               ref
                   .read(pageProvider.notifier)
-                  .setPage(const DriverHistoryPage());
+                  .setPage(DriverHistoryPage(driverId: ref.read(userId.idProvider)));
             },
           ),
           DrawerTile(
@@ -88,7 +93,7 @@ class DriverDrawer extends ConsumerWidget {
               // Change this to the appropriate page
               ref
                   .read(pageProvider.notifier)
-                  .setPage(const CurrentAssignmentPage());
+                  .setPage(CurrentAssignmentPage(driverId: ref.read(userId.idProvider)));
             },
           ),
         ],
