@@ -112,12 +112,16 @@ class _VehiclesPageState extends ConsumerState<VehiclesPage> {
           const SizedBox(
             height: 6,
           ),
-          Text(
-            'Add a new vehicle here',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ref.read(userRole.roleProvider) == 'Admin'
+              ? Text(
+                  'Add a new vehicle here',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                )
+              : const SizedBox(
+                  height: 0,
                 ),
-          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: ref.read(userRole.roleProvider) == 'Admin'

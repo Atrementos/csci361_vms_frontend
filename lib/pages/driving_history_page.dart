@@ -1,48 +1,46 @@
-import 'package:csci361_vms_frontend/widgets/driver_drawer.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:csci361_vms_frontend/widgets/driver_drawer.dart';
 
 import '../models/driver_assignment.dart';
 
 class DriverHistoryPage extends StatefulWidget {
-  const DriverHistoryPage({Key? key}) : super(key: key);
-
+  final int driverId;
+  const DriverHistoryPage({Key? key, required this.driverId}) : super(key: key);
   @override
   _DriverHistoryPageState createState() => _DriverHistoryPageState();
 }
 
 class _DriverHistoryPageState extends State<DriverHistoryPage> {
-  List<DriverAssignment> driverHistoryList = [
-    DriverAssignment(
-      description: "Go drift around mega",
-      status: "Pending",
-      startLocation: [29.0, 12.0],
-      endLocation: [99.0, 100.0],
-      startDateTime: null,
-      distanceCovered: null,
-      endDateTime: null,
-    ),
-    DriverAssignment(
-      description: "Go buy chocolate",
-      status: "Active",
-      startLocation: [51.0, 71.0],
-      endLocation: [52.0, 72.0],
-      startDateTime: null,
-      distanceCovered: null,
-      endDateTime: null,
-    ),
-    DriverAssignment(
-      description: "Drive listening to 2Pac",
-      status: "Pending",
-      startLocation: [53.0, 74.0],
-      endLocation: [51.0, 71.0],
-      startDateTime: null,
-      distanceCovered: null,
-      endDateTime: null,
-    ),
-  ];
-
+  List<DriverAssignment> driverHistoryList = [];
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
+  var isLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDriverHistoryList();
+  }
+
+  void loadDriverHistoryList() async {
+    final url = Uri.http('vms-api.madi-wka.xyz', '/task/driver/${widget.driverId}/');
+    final response = await http.get(url, headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg'},);
+    if (response.statusCode == 200) {
+      final List<dynamic> decodedResponse = json.decode(response.body);
+      setState(() {
+        driverHistoryList = decodedResponse
+            .where((data) => ['Completed', 'Cancelled'].contains(data['Status']))
+            .map((data) => DriverAssignment.fromJson(data))
+            .toList();
+        isLoaded = true;
+      });
+    } else {
+      // Handle error
+      print('Failed to load driver history. Status code: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +48,20 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
       appBar: AppBar(
         title: const Text('Driver History'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildSearchBar(),
-            const SizedBox(height: 16),
-            _buildDriverHistoryList(),
-          ],
+      body: Visibility(
+        visible: isLoaded,
+        replacement: const Center(
+          child: CircularProgressIndicator(),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildSearchBar(),
+              const SizedBox(height: 16),
+              _buildDriverHistoryList(),
+            ],
+          ),
         ),
       ),
       drawer: const DriverDrawer(),
@@ -89,46 +93,61 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
   }
 
   Widget _buildDriverHistoryList() {
-    // Filter the driver history based on the search query
     List<DriverAssignment> filteredHistory = driverHistoryList
         .where((history) =>
     history.description.contains(searchQuery) ||
         history.status.contains(searchQuery))
         .toList();
-
-    return Expanded(
-      child: ListView.builder(
-        itemCount: filteredHistory.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.all(8.0),
-            child: ListTile(
-              title: Text(
-                'Description: ${filteredHistory[index].description}',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Start Location: ${filteredHistory[index].startLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                    Text('End Location: ${filteredHistory[index].endLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                    Text('Distance Covered: ${filteredHistory[index].distanceCovered}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                    Text('Status: ${filteredHistory[index].status}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                    Text('Start DateTime: ${filteredHistory[index].startDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                    Text('End DateTime: ${filteredHistory[index].endDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
-                  ],
-                ),
+    if (filteredHistory.isEmpty) {
+      return const Center(
+        child: Card(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Text(
+              'No driving history available',
+              style: TextStyle(
+                fontSize: 25,
+                color: Colors.white70,
               ),
             ),
-          );
-        },
-      ),
-    );
+          ),
+        ),
+      );
+    }
+    else {
+      return Expanded(
+        child: ListView.builder(
+          itemCount: filteredHistory.length,
+          itemBuilder: (context, index) {
+            return Card(
+              margin: const EdgeInsets.all(8.0),
+              child: ListTile(
+                title: Text(
+                  'Description: ${filteredHistory[index].description}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Start Location: ${filteredHistory[index].startLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                      Text('End Location: ${filteredHistory[index].endLocation}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                      Text('Distance Covered: ${filteredHistory[index].distanceCovered}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                      Text('Status: ${filteredHistory[index].status}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                      Text('Start DateTime: ${filteredHistory[index].startDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                      Text('End DateTime: ${filteredHistory[index].endDateTime}', style: const TextStyle(fontSize: 17, color: Colors.white70)),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
   }
 }
-
 
 

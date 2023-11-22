@@ -118,14 +118,13 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                           items: [
                             const DropdownMenuItem(
                               value: '',
-                              child: Text('All roles'),
+                              child: Text('All roles', style: TextStyle(color: Colors.white70)),
                             ),
                             for (final role in allRoles)
                               DropdownMenuItem(
                                 value: role,
                                 child: Text(
-                                  role,
-                                ),
+                                  role, style: const TextStyle(color: Colors.white70)),
                               ),
                           ],
                           onChanged: (value) {
@@ -133,6 +132,7 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                               selectedRole = value!;
                             });
                           },
+                          dropdownColor: const Color.fromARGB(255, 33, 41, 34),
                         ),
                       ),
                     ],
@@ -189,7 +189,18 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                     );
                   } else {
                     if (currentPage == totalPages) {
-                      return const Text('You have reached the end.');
+                      return Center(
+                        child: Text(
+                          'You have reached the end.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground,
+                              ),
+                        ),
+                      );
                     } else {
                       return const Center(
                         child: SizedBox(

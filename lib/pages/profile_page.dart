@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../providers/id_provider.dart';
 import '../widgets/driver_drawer.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -42,6 +43,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     });
     Map<String, dynamic> decodedResponse = json.decode(response.body);
     userRole.setRole(decodedResponse['Role']);
+    userId.setId(decodedResponse['Id']);
     setState(() {
       _userInfo = decodedResponse;
       firstName = _userInfo!['Name'];
@@ -192,7 +194,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         ),
       );
     }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
