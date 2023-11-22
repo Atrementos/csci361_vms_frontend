@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/widgets/driver_drawer.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/driver_assignment.dart';
-import '../providers/jwt_token_provider.dart';
 
 class DriverHistoryPage extends StatefulWidget {
   final int driverId;
