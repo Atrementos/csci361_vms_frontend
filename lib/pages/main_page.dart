@@ -15,6 +15,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     Widget activePage = ref.watch(pageProvider);
+    print(activePage);
     return activePage;
   }
 }

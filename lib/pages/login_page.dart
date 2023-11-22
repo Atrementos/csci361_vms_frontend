@@ -69,7 +69,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         return;
       }
       var decodedResponse = json.decode(response.body);
-      print(decodedResponse);
       jwt.setJwtToken(decodedResponse["access_token"]);
       final newPrefs = await prefs;
       newPrefs.setString('jwt', decodedResponse["access_token"]);

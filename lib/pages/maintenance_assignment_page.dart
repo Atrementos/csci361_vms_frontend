@@ -1,38 +1,37 @@
+import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:flutter/material.dart';
-import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class MaintenanceAssignmentPage extends StatefulWidget {
-  const MaintenanceAssignmentPage(
-      {Key? key, required this.maintenanceAssignment})
-      : super(key: key);
+
+class MaintenanceAssignmentPage extends ConsumerStatefulWidget {
   final MaintenanceAssignment maintenanceAssignment;
+  const MaintenanceAssignmentPage({super.key,required this.maintenanceAssignment});
 
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<MaintenanceAssignmentPage> createState() {
     return _MaintenanceAssignmentPageState();
   }
 }
 
-class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
+class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmentPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _uploadParts();
+  }
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> _carParts = [];
   final imagepicker = ImagePicker();
   File? _selectedImage;
   TextEditingController _carPartNameController = TextEditingController();
   TextEditingController _repairCostController = TextEditingController();
-
-  void _createAssignment() {
-    // Perform assignment creation logic here, including car part details
-    // You can access the entered values using _carPartNameController.text
-    // and _repairCostController.text
-    if (_selectedImage != null) {
-      // Handle image upload logic here
-    }
-  }
+  TextEditingController _carPartNumberController = TextEditingController();
+  TextEditingController _carPartConditionController = TextEditingController();
 
   Future<void> _pickImage() async {
     final pickedFile = await imagepicker.pickImage(source: ImageSource.gallery);
@@ -44,19 +43,70 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
     });
   }
 
-  void _addCarPart() {
-    setState(() {
-      _carParts.add({
-        'name': _carPartNameController.text,
-        'cost': double.parse(_repairCostController.text),
-        'photo': _selectedImage,
-      });
 
-      // Clear the text controllers after adding a car part
-      _carPartNameController.clear();
-      _repairCostController.clear();
-      _selectedImage = null;
-    });
+  void _uploadParts() async{
+    //TODO
+  }
+  void _addCarPart() async {
+    final carPart = {
+      "ParentId": widget.maintenanceAssignment.id.toString(),
+      "Name": _carPartNameController.text,
+      "Number": _carPartNumberController.text,
+      "Condition": _carPartConditionController.text,
+      "Cost": _repairCostController.text,
+    };
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.http('vms-api.madi-wka.xyz', 'maintenancejob/carpart', carPart),
+    );
+    request.headers.addAll({HttpHeaders.authorizationHeader:
+    "Bearer ${ref.read(jwt.jwtTokenProvider)}"});
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        _selectedImage!.path,
+      ),
+    );
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final response = await request.send();
+      var responseData = await response.stream.toBytes();
+      if (response.statusCode != 201) {
+        print(response.statusCode);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not upload the car part. Try again!'),
+            ),
+          );
+        }
+        return;
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Uploaded successfully'),
+            ),
+          );
+        }
+        setState(() {
+          _carParts.add({
+            'name': _carPartNameController.text,
+            'number': _carPartNumberController.text,
+            'condition': _carPartConditionController.text,
+            'cost': _repairCostController.text,
+            'photo': _selectedImage,
+          });
+
+          _carPartNameController.clear();
+          _repairCostController.clear();
+          _carPartNumberController.clear();
+          _carPartConditionController.clear();
+          _selectedImage = null;
+        });
+      }
+    }
   }
 
   @override
@@ -65,76 +115,140 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
       appBar: AppBar(
         title: const Text('Assignment Details'),
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 6,
-          ),
-          Text(
-            'Add a car part to repair',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 6,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _carPartNameController,
+                            decoration: const InputDecoration(
+                              label: Text('Car Part Name'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _repairCostController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              label: Text('Repair Cost'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _carPartNumberController,
+                            decoration: const InputDecoration(
+                              label: Text('Car Part Number'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _carPartConditionController,
+                            decoration: const InputDecoration(
+                              label: Text('Car Part Condition'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _carPartNameController,
-                          decoration: const InputDecoration(
-                            label: Text('Car Part Name'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _repairCostController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            label: Text('Repair Cost'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  _pickImage();
-                },
-                child: Text('Upload Photo'),
+            _selectedImage != null
+                ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  //to show image, you type like this.
+                  File(_selectedImage!.path),
+                  fit: BoxFit.cover,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: 300,
+                ),
               ),
-            ],
-          ),
-          ElevatedButton(
-            onPressed: _addCarPart,
-            child: const Text('Add Car Part'),
-          ),
-          if (_selectedImage != null) Image.file(_selectedImage!),
-          Expanded(
-            child: ListView.builder(
+            )
+                : const SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _pickImage();
+                  },
+                  child: Text('Upload Photo'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedImage = null;
+                    });
+                  },
+                  child: Text('Delete Photo'),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              onPressed: _addCarPart,
+              child: const Text('Add Car Part'),
+            ),
+            SizedBox(
+              height: 12,
+            ),
+            Container(
+              child: const Text("Car Parts uploaded",
+                style: TextStyle(color: Colors.white,
+                  fontSize: 20, fontWeight: FontWeight.bold), ),
+            ),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               itemCount: _carParts.length,
               itemBuilder: (context, index) {
                 return Container(
@@ -147,19 +261,28 @@ class _MaintenanceAssignmentPageState extends State<MaintenanceAssignmentPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Car Part ${index + 1}'),
-                      Text('Name: ${_carParts[index]['name']}'),
-                      Text('Cost: \$${_carParts[index]['cost']}'),
+                      Text('Car Part Name:   ${_carParts[index]['name']}',
+                        style: const TextStyle(color: Colors.white,
+                            fontSize: 15, fontWeight: FontWeight.w300),),
+                      Text('Car Part Number:  ${_carParts[index]['number']}',
+                        style: const TextStyle(color: Colors.white,
+                            fontSize: 15, fontWeight: FontWeight.w300),),
+                      Text('Car Part Cost:   ${_carParts[index]['cost']}',
+                        style: const TextStyle(color: Colors.white,
+                            fontSize: 15, fontWeight: FontWeight.w300),),
+                      Text('Car Part Condition:   ${_carParts[index]['condition']}',
+                        style: const TextStyle(color: Colors.white,
+                            fontSize: 15, fontWeight: FontWeight.w300),),
                       if (_carParts[index]['photo'] != null)
                         Image.file(_carParts[index]['photo']!),
                     ],
                   ),
                 );
-              },
-            ),
-          ),
-        ],
+              },),
+          ],
+        ),
       ),
     );
   }
 }
+

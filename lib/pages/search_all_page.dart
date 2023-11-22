@@ -38,7 +38,7 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     if (selectedRole != '') {
       queryParams['role'] = selectedRole;
     }
-    final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
+    final url = Uri.http('vms-api.madi-wka.xyz  ', '/user/search/', queryParams);
     final response = await http.get(url);
     var decodedResponse = json.decode(response.body);
     setState(() {
@@ -66,7 +66,8 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+        'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+        'Content-Type':'application/json',
     });
     var decodedResponse = json.decode(response.body);
     setState(() {
