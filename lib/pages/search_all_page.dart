@@ -156,66 +156,68 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
               ),
             ),
           ),
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                if (notification is ScrollEndNotification &&
-                    notification.metrics.extentAfter == 0) {
-                  _loadMoreResults();
-                }
-                return false;
-              },
-              child: ListView.builder(
-                itemCount:
-                    (searchResults.isEmpty) ? 0 : searchResults.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < searchResults.length) {
-                    return ListTile(
-                      leading: Text(searchResults[index]['Role']),
-                      title: Text(
-                          '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
-                      trailing: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) {
-                                return UserDetailsPage(
-                                    userId: searchResults[index]['id']);
-                              },
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.arrow_outward),
-                      ),
-                    );
-                  } else {
-                    if (currentPage == totalPages) {
-                      return Center(
-                        child: Text(
-                          'You have reached the end.',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
+          if (searchResults.isNotEmpty)
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification is ScrollEndNotification &&
+                      notification.metrics.extentAfter == 0) {
+                    _loadMoreResults();
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  itemCount:
+                      (searchResults.isEmpty) ? 0 : searchResults.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < searchResults.length) {
+                      return ListTile(
+                        leading: Text(searchResults[index]['Role']),
+                        title: Text(
+                            '${searchResults[index]['Name']} ${searchResults[index]['LastName']}, ${searchResults[index]['Email']}'),
+                        trailing: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (ctx) {
+                                  return UserDetailsPage(
+                                      userId: searchResults[index]['id']);
+                                },
                               ),
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_outward),
                         ),
                       );
                     } else {
-                      return const Center(
-                        child: SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
+                      if (currentPage == totalPages) {
+                        return Center(
+                          child: Text(
+                            'You have reached the end.',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground,
+                                ),
+                          ),
+                        );
+                      } else {
+                        return const Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
                     }
-                  }
-                },
+                  },
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
