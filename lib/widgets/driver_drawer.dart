@@ -1,5 +1,6 @@
 import 'package:csci361_vms_frontend/pages/driving_history_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicle_details_page.dart';
+import 'package:csci361_vms_frontend/providers/driver_vehicle_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:csci361_vms_frontend/providers/page_provider.dart';
 
 import '../pages/current_assignments_page.dart';
 import '../pages/profile_page.dart';
-import '../providers/id_provider.dart';
+import '../providers/user_id_provider.dart';
 
 class DriverDrawer extends ConsumerWidget {
   const DriverDrawer({Key? key});
@@ -75,7 +76,7 @@ class DriverDrawer extends ConsumerWidget {
               // Change this to the appropriate page
               ref
                   .read(pageProvider.notifier)
-                  .setPage(VehicleDetailsPage(vehicleId: ref.read(userId.idProvider)));
+                  .setPage(VehicleDetailsPage(vehicleId: ref.read(vehicleId.vehicleIdProvider)));
             },
           ),
           DrawerTile(
