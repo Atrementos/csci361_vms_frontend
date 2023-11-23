@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
     super.initState();
     _uploadParts();
   }
+
   final _formKey = GlobalKey<FormState>();
   List<Map<String, dynamic>> _carParts = [];
   final imagepicker = ImagePicker();
@@ -44,9 +47,33 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
   }
 
 
-  void _uploadParts() async{
-    //TODO
+  void _uploadParts() async {
+    // Once the image is uploaded successfully, fetch CarPartsList
+    final carPartsResponse = await http.get(
+      Uri.parse('http://vms-api.madi-wka.xyz/maintenancejob/${widget.maintenanceAssignment.id}'),
+      headers: {
+        HttpHeaders.authorizationHeader: "Bearer ${ref.read(
+            jwt.jwtTokenProvider)}"
+      },
+    );
+
+    if (carPartsResponse.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(carPartsResponse.body)['CarPartsList'];
+      setState(() {
+        _carParts = data
+            .map<Map<String, dynamic>>((part) =>
+        {
+          'name': part['Name'],
+          'number': part['Number'],
+          'condition': part['Condition'],
+          'cost': part['Cost'].toString(),
+          'photo': base64Decode(part['image']), // Decode base64 image
+        })
+            .toList();
+      });
+    }
   }
+
   void _addCarPart() async {
     final carPart = {
       "ParentId": widget.maintenanceAssignment.id.toString(),
@@ -90,21 +117,7 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
             ),
           );
         }
-        setState(() {
-          _carParts.add({
-            'name': _carPartNameController.text,
-            'number': _carPartNumberController.text,
-            'condition': _carPartConditionController.text,
-            'cost': _repairCostController.text,
-            'photo': _selectedImage,
-          });
-
-          _carPartNameController.clear();
-          _repairCostController.clear();
-          _carPartNumberController.clear();
-          _carPartConditionController.clear();
-          _selectedImage = null;
-        });
+        _uploadParts();
       }
     }
   }
@@ -242,9 +255,9 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
               height: 12,
             ),
             Container(
-              child: const Text("Car Parts uploaded",
+              child: const Text("Uploaded Car Parts",
                 style: TextStyle(color: Colors.white,
-                  fontSize: 20, fontWeight: FontWeight.bold), ),
+                    fontSize: 20, fontWeight: FontWeight.bold), ),
             ),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -274,7 +287,7 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
                         style: const TextStyle(color: Colors.white,
                             fontSize: 15, fontWeight: FontWeight.w300),),
                       if (_carParts[index]['photo'] != null)
-                        Image.file(_carParts[index]['photo']!),
+                        Image.memory(_carParts[index]['photo']!),
                     ],
                   ),
                 );
@@ -285,4 +298,3 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
     );
   }
 }
-
