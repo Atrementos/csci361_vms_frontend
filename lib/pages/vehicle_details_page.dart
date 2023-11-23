@@ -127,21 +127,19 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Colors.white70,
                             fontSize: 24,
-                      ),
+                          ),
                     ),
                   ],
                 ),
               ),
-      ),
+            ),
       drawer: ref.read(userRole.roleProvider) == null
           ? const CircularProgressIndicator()
-          : ref.read(userRole.roleProvider) == 'Admin'
-          ? const AdminDrawer()
           : ref.read(userRole.roleProvider) == 'Driver'
-          ? const DriverDrawer()
-          : ref.read(userRole.roleProvider) == 'Fueling'
-          ? const FuelingPersonDrawer()
-          : const MaintenanceDrawer(),
+              ? const DriverDrawer()
+              : ref.read(userRole.roleProvider) == 'Fueling'
+                  ? const FuelingPersonDrawer()
+                  : null,
     );
   }
 }
