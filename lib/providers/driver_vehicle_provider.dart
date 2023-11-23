@@ -8,4 +8,13 @@ class IdIdentifier {
   }
 }
 
+class LocationIdentifier {
+  late Provider<List<dynamic>> locationProvider;
+
+  void setLocation(List<dynamic> location) {
+    locationProvider = Provider((ref) => location);
+  }
+}
+
 final vehicleId = IdIdentifier();
+final locationId = LocationIdentifier();

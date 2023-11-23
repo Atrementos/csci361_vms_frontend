@@ -1,5 +1,6 @@
 import 'package:csci361_vms_frontend/pages/driving_history_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicle_details_page.dart';
+import 'package:csci361_vms_frontend/pages/view_vehicle.dart';
 import 'package:csci361_vms_frontend/providers/driver_vehicle_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
@@ -95,6 +96,15 @@ class DriverDrawer extends ConsumerWidget {
               ref
                   .read(pageProvider.notifier)
                   .setPage(CurrentAssignmentPage(driverId: ref.read(userId.idProvider)));
+            },
+          ),
+          DrawerTile(
+            title: 'View My Vehicle',
+            switchPage: () {
+              // Change this to the appropriate page
+              ref
+                  .read(pageProvider.notifier)
+                  .setPage(ViewVehiclePage(currentLocation: ref.read(locationId.locationProvider)));
             },
           ),
         ],

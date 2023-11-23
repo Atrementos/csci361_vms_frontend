@@ -48,7 +48,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     userId.setId(decodedResponse['Id']);
     if (ref.read(userRole.roleProvider) == 'Driver') {
       final response = await http.get(Uri.http('vms-api.madi-wka.xyz', '/user/driver/${ref.read(userId.idProvider)}'));
-      vehicleId.setId(Vehicle.fromJson(json.decode(response.body)['AssignedVehicle']).id);
+      Vehicle assignedVehicle = Vehicle.fromJson(json.decode(response.body)['AssignedVehicle']);
+      vehicleId.setId(assignedVehicle.id);
+      locationId.setLocation(assignedVehicle.currentLocation);
     }
     setState(() {
       _userInfo = decodedResponse;
