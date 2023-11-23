@@ -17,7 +17,7 @@ class VehicleForFuelingPage extends ConsumerStatefulWidget {
 }
 
 class _VehicleForFuelingPageState extends ConsumerState<VehicleForFuelingPage> {
-  var vehicles = [];
+  List<Vehicle> vehicles = [];
   bool vehiclesLoaded = false;
 
   @override
@@ -32,7 +32,10 @@ class _VehicleForFuelingPageState extends ConsumerState<VehicleForFuelingPage> {
     print(response.statusCode);
     print(response.body);
     setState(() {
-      vehicles = json.decode(response.body);
+      final List<dynamic> data = json.decode(response.body);
+      vehicles = data.map((json) {
+        return Vehicle.fromJson(json);
+      }).toList();
       vehiclesLoaded = true;
     });
   }
@@ -45,38 +48,39 @@ class _VehicleForFuelingPageState extends ConsumerState<VehicleForFuelingPage> {
       ),
       body: !vehiclesLoaded
           ? const Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : ListView.builder(
-              itemCount: vehicles.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                  ),
-                  child: ListTile(
-                    leading: Text(vehicles[index]['LicensePlate']),
-                    title: Text(
-                        '${vehicles[index]['Model']} (${vehicles[index]['Year']})'),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) {
-                              return FuelingDetailsPage(
-                                vehicle: Vehicle.fromJson(vehicles[index]),
-                              );
-                            },
-                          ),
+        itemCount: vehicles.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 6,
+            ),
+            child: ListTile(
+              leading: Text(vehicles[index].licensePlate),
+              title: Text(
+                  '${vehicles[index].model} (${vehicles[index].year})'),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) {
+                        return FuelingDetailsPage(
+                          vehicleId: vehicles[index].vehicleId,
                         );
                       },
-                      child: const Text('Change'),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+                child: const Text('Change'),
+              ),
             ),
+          );
+        },
+      ),
       drawer: const FuelingPersonDrawer(),
     );
   }
 }
+

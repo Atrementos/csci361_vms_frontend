@@ -4,18 +4,23 @@ import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FuelingDetailsPage extends StatefulWidget {
-  final Vehicle vehicle; // Make the Vehicle parameter nullable
+class FuelingDetailsPage extends ConsumerStatefulWidget {
+  int vehicleId;
 
-  const FuelingDetailsPage({Key? key, required this.vehicle}) : super(key: key);
+  FuelingDetailsPage({Key? key, required this.vehicleId}) : super(key: key);
 
   @override
-  _FuelingDetailsPageState createState() => _FuelingDetailsPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _FuelingDetailsPageState();
+  }
 }
 
-class _FuelingDetailsPageState extends State<FuelingDetailsPage> {
-  String _fuelAmount = "";
+class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
+  final formKey = GlobalKey<FormState>();
+  Vehicle? currentVehicle;
   String _fuelingTask = "";
   String _description = "";
   String _date = "";
@@ -25,134 +30,191 @@ class _FuelingDetailsPageState extends State<FuelingDetailsPage> {
   File? _beforeImage;
   File? _afterImage;
 
+  // Add controllers for the editable fields
+  TextEditingController fuelAmountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadVehicleInfo();
+  }
+
+  void loadVehicleInfo() async {
+    final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
+    final response = await http.get(url);
+    Map<String, dynamic> decodedResponse = json.decode(response.body);
+    setState(() {
+      currentVehicle = Vehicle.fromJson(decodedResponse);
+
+      // Optionally update the controller value
+      fuelAmountController.text = currentVehicle!.fuel.toString();
+    });
+  }
+
+
+  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
+
+  Future<void> _editFuelAmount() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+
+      final Map<String, dynamic> queryParams = {
+        "Model": currentVehicle!.model,
+        "Year": currentVehicle!.year.toString(),
+        "Fuel": fuelAmountController.text,
+        "Capacity": currentVehicle!.sittingCapacity.toString(),
+        "Type": currentVehicle!.type,
+        "Mileage": currentVehicle!.mileage.toString(),
+        "Status": currentVehicle!.status,
+        "LicensePlate": currentVehicle!.licensePlate,
+      };
+
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
+      var response = await http.put(url, body: jsonEncode(queryParams), headers: {
+        'Authorization': "Bearer $token",
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      });
+
+      if (response.statusCode == 200) {
+        // Optionally, you might want to reload the vehicle information after editing.
+        loadVehicleInfo();
+        // Manually update the controller's text
+        fuelAmountController.text = currentVehicle!.fuel.toString();
+      } else {
+        throw Exception(response.body);
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            'Fueling Details${widget.vehicle != null ? ' - ${widget.vehicle!.model}' : ''}'),
+        title: Text('Fueling Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ... (unchanged code)
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ... (unchanged code)
 
-            Text(
-              'Change Fuel Amount',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Fuel Amount',
+              Text(
+                'Current Fuel Amount: ${currentVehicle?.fuel}',
+                style: Theme.of(context).textTheme.headline6!.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: TextFormField(
+                      controller: fuelAmountController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Fuel Amount',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a fuel amount';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a fuel amount';
-                      }
-                      return null;
-                    },
-                    onChanged: (value) {
-                      _fuelAmount = value;
-                    },
+
                   ),
-                ),
-                const SizedBox(
-                  width: 12,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle the logic to change fuel amount here
-                    // You can use the _fuelAmount value and make the necessary API calls.
-                  },
-                  child: const Text('Change'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Fueling Task Details',
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  const SizedBox(
+                    width: 12,
                   ),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Description',
+                  ElevatedButton(
+                    onPressed: _editFuelAmount,
+                    child: const Text('Change'),
+                  ),
+                ],
               ),
-              onChanged: (value) {
-                _description = value;
-              },
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Date',
-              ),
-              onChanged: (value) {
-                _date = value;
-              },
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Cost',
-              ),
-              onChanged: (value) {
-                _cost = value;
-              },
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Fuel Refilled (in liters or gallons)',
-              ),
-              onChanged: (value) {
-                _fuelRefilled = value;
-              },
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Gas Station Name',
-              ),
-              onChanged: (value) {
-                _gasStationName = value;
-              },
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle the logic to upload before image
-                  },
-                  child: const Text('Upload Before Image'),
+              const SizedBox(height: 16),
+              Text(
+                'Fueling Task Details',
+                style: Theme.of(context).textTheme.headline6!.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle the logic to upload after image
-                  },
-                  child: const Text('Upload After Image'),
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Description',
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle the logic to submit the fueling task details
-                // You can use the entered values and uploaded images for API calls.
-              },
-              child: const Text('Submit Task'),
-            ),
-          ],
+                onChanged: (value) {
+                  _description = value;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Date',
+                ),
+                onChanged: (value) {
+                  _date = value;
+                },
+              ),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Cost',
+                ),
+                onChanged: (value) {
+                  _cost = value;
+                },
+              ),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Fuel Refilled (in liters or gallons)',
+                ),
+                onChanged: (value) {
+                  _fuelRefilled = value;
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Gas Station Name',
+                ),
+                onChanged: (value) {
+                  _gasStationName = value;
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle the logic to upload before image
+                    },
+                    child: const Text('Upload Before Image'),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle the logic to upload after image
+                    },
+                    child: const Text('Upload After Image'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // Handle the logic to submit the fueling task details
+                  // You can use the entered values and uploaded images for API calls.
+                },
+                child: const Text('Submit Task'),
+              ),
+            ],
+          ),
         ),
       ),
     );

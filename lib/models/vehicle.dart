@@ -1,7 +1,7 @@
 import 'package:csci361_vms_frontend/models/user.dart';
 
 class Vehicle {
-  final int vehicleId;
+  int vehicleId;
   final String model;
   final int year;
   final String licensePlate;
@@ -14,7 +14,7 @@ class Vehicle {
   final int sittingCapacity;
   final String status;
 
-  const Vehicle({
+  Vehicle({
     required this.vehicleId,
     required this.model,
     required this.year,
