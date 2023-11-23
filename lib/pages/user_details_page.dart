@@ -388,44 +388,56 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
           ),
           if (role == 'Driver')
             driveTasks.isEmpty
-                ? const Card(
-                    child: Text('No assignments'),
+                ? Card(
+                    child: Card(
+                      child: Text(
+                        'No assignments',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
+                      ),
+                    ),
                   )
                 : Expanded(
                     child: ListView.builder(
                       itemCount: driveTasks.length,
                       itemBuilder: (ctx, index) {
                         return Card(
+                          margin: const EdgeInsets.all(8),
                           child: ListTile(
                             title: Text(
                               'Description: ${driveTasks[index]['Description']}',
                             ),
-                            subtitle: Column(
-                              children: [
-                                Text(
-                                    'Start Location: ${driveTasks[index]['StartLocation']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                                Text(
-                                    'End Location: ${driveTasks[index]['EndLocation']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                                Text(
-                                    'Distance Covered: ${driveTasks[index]['DistanceCovered']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                                Text('Status: ${driveTasks[index]['Status']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                                Text(
-                                    'Start DateTime: ${driveTasks[index]['StartDateTime']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                                Text(
-                                    'End DateTime: ${driveTasks[index]['EndDateTime']}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: Colors.white70)),
-                              ],
+                            subtitle: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                children: [
+                                  Text(
+                                      'Start Location: ${driveTasks[index]['StartLocation']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'End Location: ${driveTasks[index]['EndLocation']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'Distance Covered: ${driveTasks[index]['DistanceCovered']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text('Status: ${driveTasks[index]['Status']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'Start DateTime: ${driveTasks[index]['StartDateTime']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'End DateTime: ${driveTasks[index]['EndDateTime']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                ],
+                              ),
                             ),
                           ),
                         );
