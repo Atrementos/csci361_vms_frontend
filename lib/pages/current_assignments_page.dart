@@ -21,6 +21,8 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
     'Completed',
     'Pending',
   ];
+  double distanceCovered = 0;
+  String newStatus = '';
   List<DriverAssignment> currentAssignments = [];
   String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
 
@@ -37,10 +39,8 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
         currentAssignments = data
-            .map((item) => DriverAssignment.fromJson(item))
-            .where((assignment) =>
-        assignment.status == 'In Progress' ||
-            assignment.status == 'Pending')
+            .where((data) => ['In Progress', 'Pending'].contains(data['Status']))
+            .map((data) => DriverAssignment.fromJson(data))
             .toList();
         isLoading = true;
       });
@@ -49,25 +49,31 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
     }
   }
 
-  void _updateStatus(int index, String newStatus) async {
-    final Map<String, dynamic> queryParams = {
-      "task_id": ['$index'],
-      "status": newStatus,
-    };
+  void _updateStatus(int index) async {
     final DriverAssignment assignment = currentAssignments[index];
+    final Map<String, dynamic> queryParams = {
+      "task_id": ['${assignment.taskId}'],
+      "status": newStatus,
+      if (distanceCovered != 0) "distance": ['$distanceCovered'],
+    };
     final url = Uri.http('vms-api.madi-wka.xyz', '/task/', queryParams);
-    // Make PATCH request to update status in the database
-    final response = await http.patch(url,
+    // Make PATCH request to update status and distance covered in the database
+    final response = await http.patch(
+      url,
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
       setState(() {
         assignment.status = newStatus;
+        if (distanceCovered != null) {
+          assignment.distanceCovered = distanceCovered;
+        }
       });
       _fetchAssignments();
       print('Status updated successfully');
     } else {
-      print('Failed to update status. Status code: ${response.statusCode}, ${jsonDecode(response.body)}');
+      print(
+          'Failed to update status. Status code: ${response.statusCode}, ${jsonDecode(response.body)}');
     }
   }
 
@@ -148,23 +154,90 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
     }
   }
 
+  List<DropdownMenuItem<String>> _buildStatusList(String currentStatus) {
+    List<String> allowedStatusList;
+    if (currentStatus == 'Pending') {
+      allowedStatusList = ['Cancelled', 'In Progress'];
+    } else if (currentStatus == 'In Progress') {
+      allowedStatusList = ['Completed'];
+    } else {
+      allowedStatusList = [];
+    }
+    List<DropdownMenuItem<String>> items = allowedStatusList.map((status) {
+      return DropdownMenuItem<String>(
+        value: status,
+        child: Text(status, style: const TextStyle(fontSize: 16, color: Colors.white70)),
+      );
+    }).toList();
+    if (!allowedStatusList.contains(currentStatus)) {
+      items.insert(
+        0,
+        DropdownMenuItem<String>(
+          value: currentStatus,
+          child: Text(currentStatus, style: const TextStyle(fontSize: 16, color: Colors.white70)),
+        ),
+      );
+    }
+    return items;
+  }
+
+
   Widget _buildStatusDropdown(int index) {
-    return DropdownButton<String>(
-      value: currentAssignments[index].status,
-      items: statusList.map((status) {
-        return DropdownMenuItem<String>(
-          value: status,
-          child: Text(status, style: const TextStyle(fontSize: 18, color: Colors.white70)),
-        );
-      }).toList(),
-      onChanged: (newValue) {
-        _updateStatus(index, newValue!);
-        setState(() {
-          currentAssignments[index].status = newValue;
-        });
-      },
-      dropdownColor: const Color.fromARGB(255, 33, 41, 34),
+    String dropdownValue = currentAssignments[index].status;
+    return Column(
+      children: [
+        DropdownButton<String>(
+          value: dropdownValue,
+          items: _buildStatusList(dropdownValue),
+          onChanged: (newValue) {
+            newStatus = newValue!;
+            // if newValue == completed add text field for distance covered
+            if (newValue == 'Completed') {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Distance Covered'),
+                    content: TextField(
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                      onChanged: (value) {
+                        distanceCovered = double.parse(value);
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Submit'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            setState(() {
+              currentAssignments[index].status = newValue;
+            });
+          },
+          dropdownColor: const Color.fromARGB(255, 33, 41, 34),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            _updateStatus(index);
+          },
+          child: const Text('Change', style: TextStyle(fontSize: 16)),
+        ),
+      ],
     );
   }
+
 }
 

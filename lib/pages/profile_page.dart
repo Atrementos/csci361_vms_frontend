@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:csci361_vms_frontend/models/maintenance_assignment.dart';
 import 'package:csci361_vms_frontend/pages/login_page.dart';
+import 'package:csci361_vms_frontend/providers/driver_vehicle_provider.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/providers/page_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
@@ -13,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/id_provider.dart';
+import '../providers/user_id_provider.dart';
 import '../widgets/driver_drawer.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -44,6 +46,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     Map<String, dynamic> decodedResponse = json.decode(response.body);
     userRole.setRole(decodedResponse['Role']);
     userId.setId(decodedResponse['Id']);
+    if (ref.read(userRole.roleProvider) == 'Driver') {
+      final response = await http.get(Uri.http('vms-api.madi-wka.xyz', '/user/driver/${ref.read(userId.idProvider)}'));
+      Vehicle assignedVehicle = Vehicle.fromJson(json.decode(response.body)['AssignedVehicle']);
+      vehicleId.setId(assignedVehicle.id);
+      locationId.setLocation(assignedVehicle.currentLocation);
+    }
     setState(() {
       _userInfo = decodedResponse;
       firstName = _userInfo!['Name'];
