@@ -38,7 +38,7 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     if (selectedRole != '') {
       queryParams['role'] = selectedRole;
     }
-    final url = Uri.http('vms-api.madi-wka.xyz  ', '/user/search/', queryParams);
+    final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
     final response = await http.get(url);
     var decodedResponse = json.decode(response.body);
     setState(() {
@@ -66,8 +66,7 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
     final url = Uri.http('vms-api.madi-wka.xyz', '/user/search/', queryParams);
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:
-        'Bearer ${ref.read(jwt.jwtTokenProvider)}',
-        'Content-Type':'application/json',
+          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
     });
     var decodedResponse = json.decode(response.body);
     setState(() {
@@ -118,13 +117,15 @@ class _SearchAllPageState extends ConsumerState<SearchAllPage> {
                           items: [
                             const DropdownMenuItem(
                               value: '',
-                              child: Text('All roles', style: TextStyle(color: Colors.white70)),
+                              child: Text('All roles',
+                                  style: TextStyle(color: Colors.white70)),
                             ),
                             for (final role in allRoles)
                               DropdownMenuItem(
                                 value: role,
-                                child: Text(
-                                  role, style: const TextStyle(color: Colors.white70)),
+                                child: Text(role,
+                                    style:
+                                        const TextStyle(color: Colors.white70)),
                               ),
                           ],
                           onChanged: (value) {
