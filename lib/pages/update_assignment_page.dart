@@ -76,7 +76,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
       print('Status: $completed');
 
       // Check if the selected status is valid
-      if (ALLOWED_TASK_STATUS.contains(completed) && completed == 'Completed') {
+      if (ALLOWED_TASK_STATUS.contains(completed) && completed == 'Complete') {
         final Uri url = Uri.http(
           'vms-api.madi-wka.xyz',
           '/maintenancejob/${assignment.id}',
