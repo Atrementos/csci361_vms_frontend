@@ -67,7 +67,7 @@ List<MaintenanceAssignment> dummyMaintenanceAssignments = [
       email: 'jane.johnson@example.com',
       role: 'Supervisor',
     ),
-    completed: false,
+    status: 'Pending',
   ),
 
 ];
