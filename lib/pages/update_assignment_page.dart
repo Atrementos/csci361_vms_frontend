@@ -22,7 +22,8 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
 
   // Define the allowed task statuses
   static const List<String> ALLOWED_TASK_STATUS = ["Requested", "Complete"];
-  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
+  String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
         Uri.http('vms-api.madi-wka.xyz', '/maintenancejob/'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         },
       );
       print('Response status: ${response.statusCode}');
@@ -76,7 +77,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
       print('Status: $completed');
 
       // Check if the selected status is valid
-      if (ALLOWED_TASK_STATUS.contains(completed) && completed == 'Completed') {
+      if (ALLOWED_TASK_STATUS.contains(completed) && completed == 'Complete') {
         final Uri url = Uri.http(
           'vms-api.madi-wka.xyz',
           '/maintenancejob/${assignment.id}',
@@ -85,7 +86,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
 
         final Map<String, String> headers = {
           HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
           'Content-Type': 'application/json',
         };
 
@@ -115,11 +116,6 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
       throw Exception('Failed to update completed status');
     }
   }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +163,10 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           child: Text(
                             searchResults[index].vehicle != null
                                 ? searchResults[index]
-                                .vehicle!
-                                .id
-                                ?.toString() ??
-                                'N/A'
+                                        .vehicle!
+                                        .id
+                                        ?.toString() ??
+                                    'N/A'
                                 : 'N/A',
                           ),
                         ),
@@ -190,12 +186,14 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           child: Text('Completed: '),
                         ),
                         DropdownButton<String>(
-                          value: ALLOWED_TASK_STATUS.contains(searchResults[index].status)
+                          value: ALLOWED_TASK_STATUS
+                                  .contains(searchResults[index].status)
                               ? searchResults[index].status
                               : 'Requested', // Provide a default value or handle null
                           onChanged: (value) {
                             if (ALLOWED_TASK_STATUS.contains(value)) {
-                              _updateMaintenanceStatus(searchResults[index], value ?? 'Requested');
+                              _updateMaintenanceStatus(
+                                  searchResults[index], value ?? 'Requested');
                             } else {
                               print('Invalid status: $value');
                             }
@@ -212,14 +210,6 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                             }).toList();
                           },
                         ),
-
-
-
-
-
-
-
-
                       ],
                     ),
                     trailing: IconButton(
