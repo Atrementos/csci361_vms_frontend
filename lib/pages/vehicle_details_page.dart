@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:csci361_vms_frontend/models/vehicle.dart';
+import 'package:csci361_vms_frontend/pages/assign_driver_page.dart';
+import 'package:csci361_vms_frontend/pages/user_details_page.dart';
+import 'package:csci361_vms_frontend/providers/driver_vehicle_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -24,11 +27,24 @@ class VehicleDetailsPage extends ConsumerStatefulWidget {
 class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
   final formKey = GlobalKey<FormState>();
   Vehicle? currentVehicle;
+  Map<String, dynamic>? vehicle;
 
   @override
   void initState() {
     super.initState();
     loadVehicleInfo();
+  }
+
+  void seeAssignedDriver() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (ctx) {
+          return UserDetailsPage(
+              userId: currentVehicle!.assignedDriver!.driverId);
+        },
+      ),
+    );
   }
 
   void loadVehicleInfo() async {
@@ -39,6 +55,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
     // print(response.body);
     var decodedResponse = json.decode(response.body);
     setState(() {
+      vehicle = decodedResponse;
       currentVehicle = Vehicle.fromJson(decodedResponse);
     });
   }
@@ -55,82 +72,102 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
             )
           : Padding(
               padding: const EdgeInsets.all(16),
-              child: Form(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Text(
-                      'Vehicle ID: ${currentVehicle!.vehicleId}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'Model: ${currentVehicle!.model}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'Year: ${currentVehicle!.year}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'License Plate: ${currentVehicle!.licensePlate}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'Mileage: ${currentVehicle!.mileage}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'Sitting capacity: ${currentVehicle!.sittingCapacity}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      'Status: ${currentVehicle!.status}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
-                          ),
-                    ),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Text(
+                    'Vehicle ID: ${currentVehicle!.vehicleId}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'Model: ${currentVehicle!.model}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'Year: ${currentVehicle!.year}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'License Plate: ${currentVehicle!.licensePlate}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'Mileage: ${currentVehicle!.mileage}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'Sitting capacity: ${currentVehicle!.sittingCapacity}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  Text(
+                    'Status: ${currentVehicle!.status}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                          fontSize: 24,
+                        ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  vehicle!['AssignedDriver'] != null
+                      ? ElevatedButton(
+                          onPressed: () {
+                            seeAssignedDriver();
+                          },
+                          child: const Text('See assigned driver'),
+                        )
+                      : ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              useSafeArea: true,
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (ctx) => AssignDriverPage(
+                                  vehicleId: currentVehicle!.vehicleId),
+                            );
+                          },
+                          child: const Text('Assign a driver'),
+                        ),
+                ],
               ),
             ),
       drawer: ref.read(userRole.roleProvider) == null
