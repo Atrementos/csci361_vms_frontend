@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/models/vehicle.dart';
+import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
 import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 class FuelingDetailsPage extends ConsumerStatefulWidget {
   int vehicleId;
@@ -40,7 +42,8 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
   }
 
   void loadVehicleInfo() async {
-    final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
+    final url =
+        Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
     final response = await http.get(url);
     Map<String, dynamic> decodedResponse = json.decode(response.body);
     setState(() {
@@ -51,8 +54,8 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     });
   }
 
-
-  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
+  String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
 
   Future<void> _editFuelAmount() async {
     if (formKey.currentState!.validate()) {
@@ -69,8 +72,10 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
         "LicensePlate": currentVehicle!.licensePlate,
       };
 
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
-      var response = await http.put(url, body: jsonEncode(queryParams), headers: {
+      final url =
+          Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
+      var response =
+          await http.put(url, body: jsonEncode(queryParams), headers: {
         'Authorization': "Bearer $token",
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',
@@ -88,12 +93,33 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     }
   }
 
+  final imagepicker = ImagePicker();
+
+  Future<void> _pickImageBefore() async {
+    final pickedFile = await imagepicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _beforeImage = File(pickedFile.path);
+      }
+    });
+  }
+
+  Future<void> _pickImageAfter() async {
+    final pickedFile = await imagepicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _afterImage = File(pickedFile.path);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fueling Details'),
+        title: const Text('Fueling Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
@@ -102,13 +128,11 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ... (unchanged code)
-
               Text(
                 'Current Fuel Amount: ${currentVehicle?.fuel}',
                 style: Theme.of(context).textTheme.headline6!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
               Row(
                 children: [
@@ -127,7 +151,6 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                         return null;
                       },
                     ),
-
                   ),
                   const SizedBox(
                     width: 12,
@@ -142,8 +165,8 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
               Text(
                 'Fueling Task Details',
                 style: Theme.of(context).textTheme.headline6!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
               TextFormField(
                 decoration: const InputDecoration(
@@ -154,6 +177,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: 'Date',
                 ),
@@ -173,7 +197,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
               TextFormField(
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Fuel Refilled (in liters or gallons)',
+                  labelText: 'Fuel Refilled (in liters)',
                 ),
                 onChanged: (value) {
                   _fuelRefilled = value;
@@ -192,14 +216,14 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // Handle the logic to upload before image
+                      _pickImageBefore();
                     },
                     child: const Text('Upload Before Image'),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: () {
-                      // Handle the logic to upload after image
+                      _pickImageAfter();
                     },
                     child: const Text('Upload After Image'),
                   ),
@@ -217,6 +241,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
           ),
         ),
       ),
+      drawer: const AdminDrawer(),
     );
   }
 }
