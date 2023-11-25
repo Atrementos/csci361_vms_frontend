@@ -1,6 +1,7 @@
 import 'package:csci361_vms_frontend/pages/fueling_history_page.dart';
 import 'package:csci361_vms_frontend/pages/profile_page.dart';
 import 'package:csci361_vms_frontend/pages/vehicles_for_fueling.dart';
+import 'package:csci361_vms_frontend/providers/id_provider.dart';
 import 'package:csci361_vms_frontend/providers/role_provider.dart';
 import 'package:csci361_vms_frontend/widgets/drawer_tile.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class FuelingPersonDrawer extends ConsumerWidget {
             switchPage: () {
               ref
                   .read(pageProvider.notifier)
-                  .setPage(const FuelingHistoryPage());
+                  .setPage(FuelingHistoryPage(ref.watch(userId.idProvider)));
             },
           ),
         ],

@@ -168,7 +168,7 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
                             controller: _repairCostController,
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                              label: Text('Repair Cost'),
+                              label: Text('Repair Cost in Tenge'),
                             ),
                           ),
                         ),

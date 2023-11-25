@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 
 class SearchAllPage extends ConsumerStatefulWidget {
   const SearchAllPage({super.key});
-
   @override
   ConsumerState<SearchAllPage> createState() {
     return _SearchAllPageState();

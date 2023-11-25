@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:csci361_vms_frontend/models/vehicle.dart';
+import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+import '../providers/page_provider.dart';
 import '../providers/role_provider.dart';
 import '../widgets/admin_drawer.dart';
 import '../widgets/driver_drawer.dart';
@@ -29,6 +31,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
   void initState() {
     super.initState();
     loadVehicleInfo();
+    print(ref.read(userRole.roleProvider));
   }
 
   void loadVehicleInfo() async {
@@ -42,12 +45,17 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       currentVehicle = Vehicle.fromJson(decodedResponse);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehicle Details'),
+        leading: ref.read(userRole.roleProvider) == 'Maintenance' ? TextButton(
+          child: Text("Back", style: TextStyle(color: Colors.white, fontSize: 12),),
+          onPressed: (){
+              Navigator.of(context).pop();
+            }
+        ) : null,
       ),
       body: currentVehicle == null
           ? const Center(
