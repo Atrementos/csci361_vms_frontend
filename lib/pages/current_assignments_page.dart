@@ -1,19 +1,24 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/driver_assignment.dart';
+import '../providers/jwt_token_provider.dart';
 import '../widgets/driver_drawer.dart';
 
-class CurrentAssignmentPage extends StatefulWidget {
+class CurrentAssignmentPage extends ConsumerStatefulWidget {
   final int driverId;
   const CurrentAssignmentPage({Key? key, required this.driverId}) : super(key: key);
 
   @override
-  _CurrentAssignmentPageState createState() => _CurrentAssignmentPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _CurrentAssignmentPageState();
+  }
 }
 
-class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
+class _CurrentAssignmentPageState extends ConsumerState<CurrentAssignmentPage> {
   var isLoading = false;
   List<String> statusList = [
     'In Progress',
@@ -24,7 +29,6 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
   double distanceCovered = 0;
   String newStatus = '';
   List<DriverAssignment> currentAssignments = [];
-  String token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
 
   @override
   void initState() {
@@ -34,7 +38,7 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
 
   void _fetchAssignments() async {
     final url = Uri.http('vms-api.madi-wka.xyz', '/task/driver/${widget.driverId}/');
-    final response = await http.get(url, headers: {'Authorization': 'Bearer $token'},);
+    final response = await http.get(url, headers: {'Authorization': 'Bearer ${ref.read(jwt.jwtTokenProvider)}'},);
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       setState(() {
@@ -45,7 +49,9 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
         isLoading = true;
       });
     } else {
-      print('Failed to load assignments. Status code: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Failed to load assignments. Status code: ${response.statusCode}');
+      }
     }
   }
 
@@ -60,20 +66,22 @@ class _CurrentAssignmentPageState extends State<CurrentAssignmentPage> {
     // Make PATCH request to update status and distance covered in the database
     final response = await http.patch(
       url,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {'Authorization': 'Bearer ${ref.read(jwt.jwtTokenProvider)}'},
     );
     if (response.statusCode == 200) {
       setState(() {
         assignment.status = newStatus;
-        if (distanceCovered != null) {
-          assignment.distanceCovered = distanceCovered;
-        }
-      });
+        assignment.distanceCovered = distanceCovered;
+            });
       _fetchAssignments();
-      print('Status updated successfully');
+      if (kDebugMode) {
+        print('Status updated successfully');
+      }
     } else {
-      print(
+      if (kDebugMode) {
+        print(
           'Failed to update status. Status code: ${response.statusCode}, ${jsonDecode(response.body)}');
+      }
     }
   }
 
