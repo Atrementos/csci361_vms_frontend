@@ -115,6 +115,21 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     });
   }
 
+  DateTime selectedDate = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        _date = picked.toLocal().toString().split(' ')[0];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,12 +192,20 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                 },
               ),
               TextFormField(
-                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   labelText: 'Date',
                 ),
-                onChanged: (value) {
-                  _date = value;
+                readOnly: true, // Make the text field read-only
+                onTap: () =>
+                    _selectDate(context), // Call the _selectDate method on tap
+                controller: TextEditingController(
+                    text: "${selectedDate.toLocal()}".split(' ')[
+                        0]), // Use a controller to display the selected date
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a date';
+                  }
+                  return null;
                 },
               ),
               TextFormField(
