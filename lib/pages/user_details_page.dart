@@ -146,6 +146,7 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
           );
         }
       }
+      editMode = false;
     }
   }
 
@@ -282,8 +283,8 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
                           readOnly: editMode ? false : true,
                           initialValue: password,
                           validator: (value) {
-                            if (value == null ||
-                                value.isEmpty ||
+                            if (value != null &&
+                                value.isNotEmpty &&
                                 !RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$')
                                     .hasMatch(value)) {
                               return 'Incorrect password format';
