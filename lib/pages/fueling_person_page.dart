@@ -1,4 +1,5 @@
 import 'package:csci361_vms_frontend/models/user.dart';
+import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
@@ -176,7 +177,7 @@ class _FuelingPersonState extends State<FuelingPersonPage> {
           ),
         ),
       ]),
-      drawer: const AdminDrawer(),
+      drawer: const FuelingPersonDrawer(),
     );
   }
 }
