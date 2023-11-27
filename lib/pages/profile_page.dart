@@ -63,6 +63,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       address = _userInfo!['Address'];
       email = _userInfo!['Email'];
     });
+
   }
 
   @override

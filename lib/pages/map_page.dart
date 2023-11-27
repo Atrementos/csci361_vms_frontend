@@ -62,10 +62,12 @@ class _MapPageState extends State<MapPage> {
         markers.addAll(vehicles.map((vehicle) {
           return Marker(
             markerId: MarkerId(vehicle.vehicleId.toString()),
-            position: LatLng(
-              double.parse(vehicle.currentLocation.elementAt(0)),
-              double.parse(vehicle.currentLocation.elementAt(1)),
-            ),
+            position: vehicle.currentLocation.isEmpty
+                ? const LatLng(0, 0)
+                : LatLng(
+                    double.parse(vehicle.currentLocation.elementAt(0)),
+                    double.parse(vehicle.currentLocation.elementAt(1)),
+                  ),
             infoWindow: InfoWindow(
               title:
                   'Vehicle id: ${vehicle.vehicleId}, Model: ${vehicle.model}, License Plate: ${vehicle.licensePlate}',

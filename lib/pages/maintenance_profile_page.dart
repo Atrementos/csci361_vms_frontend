@@ -5,6 +5,9 @@ import 'package:csci361_vms_frontend/widgets/maintenance_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../providers/role_provider.dart';
 
 class MaintenanceProfilePage extends ConsumerStatefulWidget {
   const MaintenanceProfilePage({super.key});
@@ -14,6 +17,7 @@ class MaintenanceProfilePage extends ConsumerStatefulWidget {
 }
 
 class  _MaintenanceProfilePageState extends ConsumerState<MaintenanceProfilePage> {
+  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
   Map<String, dynamic>? _userInfo;
   final _formKey = GlobalKey<FormState>();
   bool editMode = false;
@@ -25,6 +29,7 @@ class  _MaintenanceProfilePageState extends ConsumerState<MaintenanceProfilePage
   String email = '';
 
   void _loadUser() async {
+    ref.read(userRole.roleProvider);
     final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
     final response = await http.get(url, headers: {
       HttpHeaders.authorizationHeader:

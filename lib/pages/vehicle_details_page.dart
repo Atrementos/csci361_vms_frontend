@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csci361_vms_frontend/models/vehicle.dart';
+import 'package:csci361_vms_frontend/pages/vehicles_page.dart';
 import 'package:csci361_vms_frontend/pages/assign_driver_page.dart';
 import 'package:csci361_vms_frontend/pages/user_details_page.dart';
 import 'package:csci361_vms_frontend/pages/view_vehicle.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
+import '../providers/page_provider.dart';
 import '../providers/jwt_token_provider.dart';
 import '../providers/role_provider.dart';
 import '../widgets/driver_drawer.dart';
@@ -35,6 +37,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
   void initState() {
     super.initState();
     loadVehicleInfo();
+    print(ref.read(userRole.roleProvider));
   }
 
   void seeAssignedDriver() {
@@ -59,27 +62,30 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       currentVehicle = Vehicle.fromJson(decodedResponse);
     });
   }
-
   void viewVehicleOnMap() {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (ctx) {
-          return ViewVehiclePage(currentLocation:
-            currentVehicle!.currentLocation
-          );
+          return ViewVehiclePage(
+              currentLocation: currentVehicle!.currentLocation);
         },
       ),
     );
   }
 
   void updateVehicleLocation() async {
+    print("Updating vehicle location");
     Position position = await getCurrentLocation();
-    final List<dynamic> positions = [position.latitude.toString(), position.longitude.toString()];
+    final List<dynamic> positions = [
+      position.latitude.toString(),
+      position.longitude.toString()
+    ];
     final postBody = {
       'CurrentLocation': positions,
     };
-    final url = Uri.http('vms-api.madi-wka.xyz', '/vehicle/${currentVehicle?.vehicleId}/location');
+    final url = Uri.http('vms-api.madi-wka.xyz',
+        '/vehicle/${currentVehicle?.vehicleId}/location');
     if (kDebugMode) {
       print(url);
     }
@@ -88,7 +94,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       body: json.encode(postBody),
       headers: {
         HttpHeaders.authorizationHeader:
-        'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+            'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         'Content-Type': 'application/json',
       },
     );
@@ -133,12 +139,17 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehicle Details'),
+        leading: ref.read(userRole.roleProvider) == 'Maintenance' ? TextButton(
+          child: Text("Back", style: TextStyle(color: Colors.white, fontSize: 12),),
+          onPressed: (){
+              Navigator.of(context).pop();
+            }
+        ) : null,
       ),
       body: currentVehicle == null
           ? const Center(
@@ -227,12 +238,13 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                       Text(
                         'Current Location on Map:',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Colors.white70,
-                          fontSize: 24,
-                        ),
+                              color: Colors.white70,
+                              fontSize: 24,
+                            ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.location_on, color: Colors.blueGrey),
+                        icon: const Icon(Icons.location_on,
+                            color: Colors.blueGrey),
                         onPressed: () {
                           viewVehicleOnMap();
                         },
@@ -243,24 +255,29 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                     height: 6,
                   ),
                   if (ref.read(userRole.roleProvider) == 'Driver')
-                    Row(
-                      children: [
-                        Text(
-                          'Update current location of the vehicle:',
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
+                    if (kIsWeb != true)
+                      Row(
+                        children: [
+                          Text(
+                            'Update current location of the vehicle:',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Colors.white70,
+                                  fontSize: 24,
+                                ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_location, color: Colors.blueGrey),
-                          onPressed: () {
-                            // Perform API call to update vehicle location
-                            updateVehicleLocation();
-                          },
-                        ),
-                      ],
-                    ),
+                          IconButton(
+                            icon: const Icon(Icons.add_location,
+                                color: Colors.blueGrey),
+                            onPressed: () {
+                              // Perform API call to update vehicle location
+                              updateVehicleLocation();
+                            },
+                          ),
+                        ],
+                      ),
                   const SizedBox(
                     height: 12,
                   ),

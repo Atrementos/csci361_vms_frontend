@@ -65,9 +65,7 @@ class DriverDrawer extends ConsumerWidget {
               ),
               onTap: () {
                 Navigator.of(context).pop();
-                ref
-                    .read(pageProvider.notifier)
-                    .setPage(const ProfilePage());
+                ref.read(pageProvider.notifier).setPage(const ProfilePage());
               },
             ),
           ),
@@ -75,36 +73,24 @@ class DriverDrawer extends ConsumerWidget {
             title: 'Vehicle Detail',
             switchPage: () {
               // Change this to the appropriate page
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(VehicleDetailsPage(vehicleId: ref.read(vehicleId.vehicleIdProvider)));
+              ref.read(pageProvider.notifier).setPage(VehicleDetailsPage(
+                  vehicleId: ref.read(vehicleId.vehicleIdProvider)));
             },
           ),
           DrawerTile(
             title: 'Driving History',
             switchPage: () {
               // Change this to the appropriate page
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(DriverHistoryPage(driverId: ref.read(userId.idProvider)));
+              ref.read(pageProvider.notifier).setPage(
+                  DriverHistoryPage(driverId: ref.read(userId.idProvider)));
             },
           ),
           DrawerTile(
             title: 'Current Assignments',
             switchPage: () {
               // Change this to the appropriate page
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(CurrentAssignmentPage(driverId: ref.read(userId.idProvider)));
-            },
-          ),
-          DrawerTile(
-            title: 'View My Vehicle',
-            switchPage: () {
-              // Change this to the appropriate page
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(ViewVehiclePage(currentLocation: ref.read(locationId.locationProvider)));
+              ref.read(pageProvider.notifier).setPage(
+                  CurrentAssignmentPage(driverId: ref.read(userId.idProvider)));
             },
           ),
         ],

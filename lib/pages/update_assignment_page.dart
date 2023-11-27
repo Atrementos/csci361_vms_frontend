@@ -52,7 +52,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
         Uri.http('vms-api.madi-wka.xyz', '/maintenancejob/'),
         headers: {
           HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         },
       );
       print('Response status: ${response.statusCode}');
@@ -89,7 +89,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
 
         final Map<String, String> headers = {
           HttpHeaders.authorizationHeader:
-          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
           'Content-Type': 'application/json',
         };
 
@@ -131,8 +131,8 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
     setState(() {
       searchResults = searchResults.where((assignment) {
         return assignment.vehicle?.licensePlate
-            ?.toLowerCase()
-            .contains(query.toLowerCase()) ??
+                ?.toLowerCase()
+                .contains(query.toLowerCase()) ??
             false;
       }).toList();
     });
@@ -211,8 +211,8 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           child: Text('Completed: '),
                         ),
                         DropdownButton<String>(
-                          value: ALLOWED_TASK_STATUS.contains(
-                              searchResults[index].status)
+                          value: ALLOWED_TASK_STATUS
+                                  .contains(searchResults[index].status)
                               ? searchResults[index].status
                               : 'Requested', // Provide a default value or handle null
                           onChanged: (value) {
