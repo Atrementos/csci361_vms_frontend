@@ -123,7 +123,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        _date = picked.toLocal().toString().split(' ')[0];
+        _date = picked.toString();
       });
     }
   }
@@ -132,34 +132,37 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
 
-      final Map<String, dynamic> taskData = {
-        'description': _description,
-        'date': _date,
-        'cost': _cost,
-        'fuelRefilled': _fuelRefilled,
-        'gasStationName': _gasStationName,
-        'beforeImage': _beforeImage?.path,
-        'afterImage': _afterImage?.path,
-      };
-
       final Map<String, dynamic> queryParams = {
-        'fuelingTask': _fuelingTask,
-        'vehicleId': widget.vehicleId,
-        'taskData': taskData,
+        'VehicleId': widget.vehicleId.toString(),
+        'Description': _description,
+        'Date': _date,
+        'Cost': _cost,
+        'FuelRefilled': _fuelRefilled,
+        'GasStationName': _gasStationName,
       };
 
-      final url = Uri.parse('http://vms-api.madi-wka.xyz/submit-task');
+      final Map<String, dynamic> queryBody = {
+        'ImageBefore': _beforeImage?.path,
+        'ImageAfter': _afterImage?.path,
+      };
+
+      final url = Uri.http('vms-api.madi-wka.xyz', '/fuel/', queryParams);
       var response =
-          await http.post(url, body: jsonEncode(queryParams), headers: {
+          await http.post(url, body: jsonEncode(queryBody), headers: {
         'Authorization': "Bearer $token",
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',
         'Accept': '*/*',
       });
-
-      if (response.statusCode == 200) {
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 201) {
+        print('Fuel task added successfully.');
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
       } else {
-        throw Exception(response.body);
+        print('Fuel task was not added.');
       }
     }
   }
