@@ -80,14 +80,6 @@ class FuelingPersonDrawer extends ConsumerWidget {
                   .setPage(const FuelingHistoryPage());
             },
           ),
-          DrawerTile(
-            title: 'Fueling Task',
-            switchPage: () {
-              ref
-                  .read(pageProvider.notifier)
-                  .setPage(FuelingDetailsPage(vehicleId: 1));
-            },
-          ),
         ],
       ),
     );
