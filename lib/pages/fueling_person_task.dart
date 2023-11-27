@@ -113,6 +113,8 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     });
   }
 
+  String intFixed(int n, int count) => n.toString().padLeft(count, "0");
+
   DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -123,7 +125,8 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        _date = picked.toString();
+        _date =
+            '${intFixed(picked.year, 4)}-${intFixed(picked.month, 2)}-${intFixed(picked.day, 2)}T${intFixed(picked.hour, 2)}:${intFixed(picked.minute, 2)}:${intFixed(picked.second, 2)}.${intFixed(picked.millisecond, 3)}Z';
       });
     }
   }
@@ -173,130 +176,132 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
       appBar: AppBar(
         title: const Text('Fueling Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Current Fuel Amount: ${currentVehicle?.fuel}',
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: TextFormField(
-                      controller: fuelAmountController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Fuel Amount',
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Current Fuel Amount: ${currentVehicle?.fuel}',
+                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a fuel amount';
-                        }
-                        return null;
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: TextFormField(
+                        controller: fuelAmountController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Fuel Amount',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a fuel amount';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    ElevatedButton(
+                      onPressed: _editFuelAmount,
+                      child: const Text('Change'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Fueling Task Details',
+                  style: Theme.of(context).textTheme.headline6!.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                  ),
+                  onChanged: (value) {
+                    _description = value;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Date',
+                  ),
+                  readOnly: true,
+                  onTap: () => _selectDate(
+                      context), // Call the _selectDate method on tap
+                  controller: TextEditingController(
+                      text: "${selectedDate.toLocal()}".split(' ')[
+                          0]), // Use a controller to display the selected date
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a date';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Cost',
+                  ),
+                  onChanged: (value) {
+                    _cost = value;
+                  },
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Fuel Refilled (in liters)',
+                  ),
+                  onChanged: (value) {
+                    _fuelRefilled = value;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Gas Station Name',
+                  ),
+                  onChanged: (value) {
+                    _gasStationName = value;
+                  },
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _pickImageBefore();
                       },
+                      child: const Text('Upload Before Image'),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  ElevatedButton(
-                    onPressed: _editFuelAmount,
-                    child: const Text('Change'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Fueling Task Details',
-                style: Theme.of(context).textTheme.headline6!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        _pickImageAfter();
+                      },
+                      child: const Text('Upload After Image'),
                     ),
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Description',
+                  ],
                 ),
-                onChanged: (value) {
-                  _description = value;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Date',
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _submitTask();
+                  },
+                  child: const Text('Submit Task'),
                 ),
-                readOnly: true,
-                onTap: () =>
-                    _selectDate(context), // Call the _selectDate method on tap
-                controller: TextEditingController(
-                    text: "${selectedDate.toLocal()}".split(' ')[
-                        0]), // Use a controller to display the selected date
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a date';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Cost',
-                ),
-                onChanged: (value) {
-                  _cost = value;
-                },
-              ),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Fuel Refilled (in liters)',
-                ),
-                onChanged: (value) {
-                  _fuelRefilled = value;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Gas Station Name',
-                ),
-                onChanged: (value) {
-                  _gasStationName = value;
-                },
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _pickImageBefore();
-                    },
-                    child: const Text('Upload Before Image'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      _pickImageAfter();
-                    },
-                    child: const Text('Upload After Image'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  _submitTask();
-                },
-                child: const Text('Submit Task'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
