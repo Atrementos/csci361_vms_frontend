@@ -83,9 +83,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
       });
 
       if (response.statusCode == 200) {
-        // Optionally, you might want to reload the vehicle information after editing.
         loadVehicleInfo();
-        // Manually update the controller's text
         fuelAmountController.text = currentVehicle!.fuel.toString();
       } else {
         throw Exception(response.body);
@@ -127,6 +125,42 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
         selectedDate = picked;
         _date = picked.toLocal().toString().split(' ')[0];
       });
+    }
+  }
+
+  void _submitTask() async {
+    if (formKey.currentState!.validate()) {
+      formKey.currentState!.save();
+
+      final Map<String, dynamic> taskData = {
+        'description': _description,
+        'date': _date,
+        'cost': _cost,
+        'fuelRefilled': _fuelRefilled,
+        'gasStationName': _gasStationName,
+        'beforeImage': _beforeImage?.path,
+        'afterImage': _afterImage?.path,
+      };
+
+      final Map<String, dynamic> queryParams = {
+        'fuelingTask': _fuelingTask,
+        'vehicleId': widget.vehicleId,
+        'taskData': taskData,
+      };
+
+      final url = Uri.parse('http://vms-api.madi-wka.xyz/submit-task');
+      var response =
+          await http.post(url, body: jsonEncode(queryParams), headers: {
+        'Authorization': "Bearer $token",
+        "Access-Control-Allow-Origin": "*",
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+      });
+
+      if (response.statusCode == 200) {
+      } else {
+        throw Exception(response.body);
+      }
     }
   }
 
@@ -195,7 +229,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                 decoration: const InputDecoration(
                   labelText: 'Date',
                 ),
-                readOnly: true, // Make the text field read-only
+                readOnly: true,
                 onTap: () =>
                     _selectDate(context), // Call the _selectDate method on tap
                 controller: TextEditingController(
@@ -255,8 +289,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  // Handle the logic to submit the fueling task details
-                  // You can use the entered values and uploaded images for API calls.
+                  _submitTask();
                 },
                 child: const Text('Submit Task'),
               ),
