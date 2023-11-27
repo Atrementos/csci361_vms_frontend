@@ -297,7 +297,6 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
           ),
         ),
       ),
-      drawer: const AdminDrawer(),
     );
   }
 }
