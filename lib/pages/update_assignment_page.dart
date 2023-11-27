@@ -18,7 +18,9 @@ class UpdateAssignmentPage extends ConsumerStatefulWidget {
 
 class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
   final formKey = GlobalKey<FormState>();
+  List<MaintenanceAssignment> allResults = [];
   List<MaintenanceAssignment> searchResults = [];
+  TextEditingController searchController = TextEditingController();
 
   // Define the allowed task statuses
   static const List<String> ALLOWED_TASK_STATUS = ["Requested", "Complete"];
@@ -35,6 +37,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
     try {
       final results = await fetchAllMaintenanceJobs();
       setState(() {
+        allResults = results;
         searchResults = results;
       });
     } catch (error) {
@@ -117,6 +120,24 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
     }
   }
 
+  void _filterResults(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        searchResults = allResults;
+      });
+      return;
+    }
+
+    setState(() {
+      searchResults = searchResults.where((assignment) {
+        return assignment.vehicle?.licensePlate
+                ?.toLowerCase()
+                .contains(query.toLowerCase()) ??
+            false;
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,9 +151,17 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
             padding: const EdgeInsets.all(12),
             child: Form(
               key: formKey,
-              child: const Column(
+              child: Column(
                 children: [
-                  // Your form fields go here if needed
+                  TextFormField(
+                    controller: searchController,
+                    onChanged: _filterResults,
+                    decoration: InputDecoration(
+                      labelText: 'Search by License Plate',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                  // Other form fields go here if needed
                 ],
               ),
             ),
@@ -162,11 +191,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           alignment: Alignment.center,
                           child: Text(
                             searchResults[index].vehicle != null
-                                ? searchResults[index]
-                                        .vehicle!
-                                        .id
-                                        ?.toString() ??
-                                    'N/A'
+                                ? 'License Plate: ${searchResults[index].vehicle!.licensePlate ?? 'N/A'}'
                                 : 'N/A',
                           ),
                         ),

@@ -1,18 +1,24 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:csci361_vms_frontend/widgets/driver_drawer.dart';
 
 import '../models/driver_assignment.dart';
+import '../providers/jwt_token_provider.dart';
 
-class DriverHistoryPage extends StatefulWidget {
+class DriverHistoryPage extends ConsumerStatefulWidget {
   final int driverId;
   const DriverHistoryPage({Key? key, required this.driverId}) : super(key: key);
+
   @override
-  _DriverHistoryPageState createState() => _DriverHistoryPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return _DriverHistoryPageState();
+  }
 }
 
-class _DriverHistoryPageState extends State<DriverHistoryPage> {
+class _DriverHistoryPageState extends ConsumerState<DriverHistoryPage> {
   List<DriverAssignment> driverHistoryList = [];
   TextEditingController searchController = TextEditingController();
   String searchQuery = '';
@@ -26,7 +32,7 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
 
   void loadDriverHistoryList() async {
     final url = Uri.http('vms-api.madi-wka.xyz', '/task/driver/${widget.driverId}/');
-    final response = await http.get(url, headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg'},);
+    final response = await http.get(url, headers: {'Authorization': 'Bearer ${ref.read(jwt.jwtTokenProvider)}'},);
     if (response.statusCode == 200) {
       final List<dynamic> decodedResponse = json.decode(response.body);
       setState(() {
@@ -38,7 +44,9 @@ class _DriverHistoryPageState extends State<DriverHistoryPage> {
       });
     } else {
       // Handle error
-      print('Failed to load driver history. Status code: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Failed to load driver history. Status code: ${response.statusCode}');
+      }
     }
   }
 

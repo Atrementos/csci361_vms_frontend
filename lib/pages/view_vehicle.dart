@@ -36,6 +36,12 @@ class _ViewVehiclePageState extends State<ViewVehiclePage> {
       appBar: AppBar(
         title: const Text('My Vehicle Location'),
         elevation: 2,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: GoogleMap(
         onMapCreated: _onMapCreated,
