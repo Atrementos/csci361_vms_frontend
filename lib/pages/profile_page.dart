@@ -31,10 +31,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   bool editMode = false;
   String firstName = '';
   String lastName = '';
-  String middleName = '';
+  String? middleName = '';
   String contactNumber = '';
   String address = '';
   String email = '';
+  String password = '';
+  String governmentId = '';
 
   void _loadUser() async {
     final url = Uri.parse('http://vms-api.madi-wka.xyz/user/me/');
@@ -43,14 +45,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           'Bearer ${ref.read(jwt.jwtTokenProvider)}',
       HttpHeaders.accessControlAllowOriginHeader: 'access-control-allow-origin',
     });
-    Map<String, dynamic> decodedResponse = json.decode(response.body);
+    final decodedResponse = json.decode(response.body);
     userRole.setRole(decodedResponse['Role']);
     userId.setId(decodedResponse['Id']);
     if (ref.read(userRole.roleProvider) == 'Driver') {
-      final response = await http.get(Uri.http('vms-api.madi-wka.xyz', '/user/driver/${ref.read(userId.idProvider)}'));
-      Vehicle assignedVehicle = Vehicle.fromJson(json.decode(response.body)['AssignedVehicle']);
-      vehicleId.setId(assignedVehicle.id);
-      locationId.setLocation(assignedVehicle.currentLocation);
+      final response = await http.get(Uri.http('vms-api.madi-wka.xyz',
+          '/user/driver/${ref.read(userId.idProvider)}'));
+      if (json.decode(response.body)['AssignedVehicle'] != null) {
+        Vehicle assignedVehicle =
+            Vehicle.fromJson(json.decode(response.body)['AssignedVehicle']);
+        vehicleId.setId(assignedVehicle.id);
+        locationId.setLocation(assignedVehicle.currentLocation);
+      }
     }
     setState(() {
       _userInfo = decodedResponse;
@@ -62,8 +68,69 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       contactNumber = _userInfo!['ContactNumber'];
       address = _userInfo!['Address'];
       email = _userInfo!['Email'];
+      governmentId = _userInfo!['GovernmentId'];
     });
+  }
 
+  void updateUserInfo() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final postBody = {
+        "Email": email,
+        "Password": password,
+        "Name": firstName,
+        "MiddleName": middleName ?? '',
+        "LastName": lastName,
+        "ContactNumber": contactNumber,
+        "GovernmentId": governmentId,
+        "Address": address,
+        "Role": _userInfo!['Role'],
+      };
+      final url = Uri.http(
+        'vms-api.madi-wka.xyz',
+        '/user/${_userInfo!['Id']}',
+      );
+      final response = await http.put(
+        url,
+        body: json.encode(postBody),
+        headers: {
+          HttpHeaders.authorizationHeader:
+              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 202) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('The user was successfully updated.'),
+            ),
+          );
+        }
+        setState(() {
+          _userInfo = json.decode(response.body);
+          firstName = _userInfo!['Name'];
+          lastName = _userInfo!['LastName'];
+          if (_userInfo!['MiddleName'] != null) {
+            middleName = _userInfo!['MiddleName'];
+          }
+          contactNumber = _userInfo!['ContactNumber'];
+          address = _userInfo!['Address'];
+          email = _userInfo!['Email'];
+          governmentId = _userInfo!['GovernmentId'];
+        });
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'Unexpected error occurred when updating user information.'),
+            ),
+          );
+        }
+      }
+      editMode = false;
+    }
   }
 
   @override
@@ -97,6 +164,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           child: TextFormField(
                             readOnly: editMode ? false : true,
                             initialValue: firstName,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                                return 'Incorrect last name format';
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              firstName = newValue!;
+                            },
                             decoration: const InputDecoration(
                               label: Text('First Name'),
                             ),
@@ -109,6 +187,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           child: TextFormField(
                             readOnly: editMode ? false : true,
                             initialValue: lastName,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                                return 'Incorrect last name format';
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              lastName = newValue!;
+                            },
                             decoration: const InputDecoration(
                               label: Text('Last Name'),
                             ),
@@ -125,6 +214,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           child: TextFormField(
                             readOnly: editMode ? false : true,
                             initialValue: contactNumber,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  !RegExp(r'^[\+]?[\d]{6,16}$')
+                                      .hasMatch(value)) {
+                                return 'Incorrect phone number format';
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              contactNumber = newValue!;
+                            },
                             decoration: const InputDecoration(
                               label: Text('Contact Number'),
                             ),
@@ -137,6 +238,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           child: TextFormField(
                             readOnly: editMode ? false : true,
                             initialValue: middleName,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                                return null;
+                              }
+                              return 'Incorrect middle name format';
+                            },
+                            onSaved: (newValue) {
+                              middleName = newValue;
+                            },
                             decoration: const InputDecoration(
                               label: Text('Middle Name'),
                             ),
@@ -153,6 +265,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           child: TextFormField(
                             readOnly: editMode ? false : true,
                             initialValue: address,
+                            onSaved: (newValue) {
+                              address = newValue!;
+                            },
                             decoration: const InputDecoration(
                               label: Text('Address'),
                             ),
@@ -164,9 +279,65 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         Expanded(
                           child: TextFormField(
                             readOnly: editMode ? false : true,
+                            initialValue: governmentId,
+                            onSaved: (newValue) {
+                              governmentId = newValue!;
+                            },
+                            decoration: const InputDecoration(
+                              label: Text('Government ID'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
                             initialValue: email,
+                            validator: (value) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                      .hasMatch(value)) {
+                                return 'Incorrect email format';
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              email = newValue!;
+                            },
                             decoration: const InputDecoration(
                               label: Text('Email'),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            readOnly: editMode ? false : true,
+                            initialValue: password,
+                            validator: (value) {
+                              if (value != null &&
+                                  value.isNotEmpty &&
+                                  !RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$')
+                                      .hasMatch(value)) {
+                                return 'Incorrect password format';
+                              }
+                              return null;
+                            },
+                            onSaved: (newValue) {
+                              if (newValue != null) {
+                                password = newValue;
+                              } else {
+                                password = '';
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              label: Text('Password'),
                             ),
                           ),
                         ),
@@ -190,7 +361,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             child: const Text('Cancel'),
                           ),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              updateUserInfo();
+                            },
                             child: const Text('Save'),
                           ),
                         ],
