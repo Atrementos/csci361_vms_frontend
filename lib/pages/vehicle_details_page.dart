@@ -65,21 +65,25 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       context,
       MaterialPageRoute(
         builder: (ctx) {
-          return ViewVehiclePage(currentLocation:
-            currentVehicle!.currentLocation
-          );
+          return ViewVehiclePage(
+              currentLocation: currentVehicle!.currentLocation);
         },
       ),
     );
   }
 
   void updateVehicleLocation() async {
+    print("Updating vehicle location");
     Position position = await getCurrentLocation();
-    final List<dynamic> positions = [position.latitude.toString(), position.longitude.toString()];
+    final List<dynamic> positions = [
+      position.latitude.toString(),
+      position.longitude.toString()
+    ];
     final postBody = {
       'CurrentLocation': positions,
     };
-    final url = Uri.http('vms-api.madi-wka.xyz', '/vehicle/${currentVehicle?.vehicleId}/location');
+    final url = Uri.http('vms-api.madi-wka.xyz',
+        '/vehicle/${currentVehicle?.vehicleId}/location');
     if (kDebugMode) {
       print(url);
     }
@@ -88,7 +92,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       body: json.encode(postBody),
       headers: {
         HttpHeaders.authorizationHeader:
-        'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+            'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         'Content-Type': 'application/json',
       },
     );
@@ -132,7 +136,6 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       return Future.error('Error getting current location: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -227,12 +230,13 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                       Text(
                         'Current Location on Map:',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Colors.white70,
-                          fontSize: 24,
-                        ),
+                              color: Colors.white70,
+                              fontSize: 24,
+                            ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.location_on, color: Colors.blueGrey),
+                        icon: const Icon(Icons.location_on,
+                            color: Colors.blueGrey),
                         onPressed: () {
                           viewVehicleOnMap();
                         },
@@ -243,24 +247,29 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                     height: 6,
                   ),
                   if (ref.read(userRole.roleProvider) == 'Driver')
-                    Row(
-                      children: [
-                        Text(
-                          'Update current location of the vehicle:',
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Colors.white70,
-                            fontSize: 24,
+                    if (kIsWeb != true)
+                      Row(
+                        children: [
+                          Text(
+                            'Update current location of the vehicle:',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Colors.white70,
+                                  fontSize: 24,
+                                ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_location, color: Colors.blueGrey),
-                          onPressed: () {
-                            // Perform API call to update vehicle location
-                            updateVehicleLocation();
-                          },
-                        ),
-                      ],
-                    ),
+                          IconButton(
+                            icon: const Icon(Icons.add_location,
+                                color: Colors.blueGrey),
+                            onPressed: () {
+                              // Perform API call to update vehicle location
+                              updateVehicleLocation();
+                            },
+                          ),
+                        ],
+                      ),
                   const SizedBox(
                     height: 12,
                   ),
