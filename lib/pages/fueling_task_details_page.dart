@@ -76,23 +76,21 @@ class _FuelingTaskPageState extends ConsumerState<FuelingTaskPage> {
   void initState(){
     // TODO: implement initState
     super.initState();
-    fetchFuelingTasksDetails();
+    _tasksDetailFuture = fetchFuelingTasksDetails();
   }
-  late FuelingTaskDetails tasksDetail;
+  late Future<FuelingTaskDetails> _tasksDetailFuture;
 
-  Future<void> fetchFuelingTasksDetails() async {
-    final url = Uri.http('vms-api.madi-wka.xyz', '/fuel/${widget.id}'); // Replace with your backend URL
+  Future<FuelingTaskDetails> fetchFuelingTasksDetails() async {
+    final url = Uri.http('vms-api.madi-wka.xyz', '/fuel/${widget.id}');
 
     final response = await http.get(url, headers: {
-      HttpHeaders.authorizationHeader : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg',
+      HttpHeaders.authorizationHeader: 'Bearer ${ref.read(jwt.jwtTokenProvider)}',
     });
-    print(response.statusCode);
-    if (response.statusCode == 200) {
 
+    if (response.statusCode == 200) {
       final decodedResponse = json.decode(response.body);
-      tasksDetail = FuelingTaskDetails.fromJson(decodedResponse);
-    }
-    else {
+      return FuelingTaskDetails.fromJson(decodedResponse);
+    } else {
       throw Exception('Failed to fetch data from the backend');
     }
   }
@@ -101,42 +99,76 @@ class _FuelingTaskPageState extends ConsumerState<FuelingTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Fueling history'),
+        title: const Text('Fueling Task Details'),
       ),
-      body: SingleChildScrollView(
-        child: Card(
-          margin: EdgeInsets.all(8.0),
-          child: ListTile(
-            title: Text('Task ID: ${tasksDetail.taskId}'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Other details...
-                Text('Gas Station Name: ${tasksDetail.gasStationName}'),
-                Text('Driver Name: ${tasksDetail.driverName} ${tasksDetail.driverLastName}'),
-                // Display imageBefore
-                tasksDetail.imageBefore.isNotEmpty
-                    ? Image.memory(
-                  tasksDetail.imageBefore,
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                )
-                    : SizedBox.shrink(), // Show nothing if imageBefore is empty
-                // Display imageAfter
-                tasksDetail.imageAfter.isNotEmpty
-                    ? Image.memory(
-                  (tasksDetail.imageAfter),
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                )
-                    : SizedBox.shrink(), // Show nothing if imageAfter is empty
-              ],
-            ),
-          ),
-        ),
+      body: FutureBuilder<FuelingTaskDetails>(
+        future: _tasksDetailFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData) {
+            return Center(child: Text('No data available'));
+          } else {
+            final tasksDetail = snapshot.data!;
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDetailRow('Task ID', tasksDetail.taskId.toString()),
+                  _buildDetailRow('Vehicle ID', tasksDetail.vehicleId.toString()),
+                  _buildDetailRow('Description', tasksDetail.description),
+                  _buildDetailRow('Date', tasksDetail.date.toString()),
+                  _buildDetailRow('Cost', tasksDetail.cost.toString()),
+                  _buildDetailRow('Fuel Refilled', tasksDetail.fuelRefilled.toString()),
+                  _buildDetailRow('Gas Station Name', tasksDetail.gasStationName),
+                  _buildDetailRow('Driver', '${tasksDetail.driverName} ${tasksDetail.driverLastName}'),
+                  _buildDetailRow('Vehicle License Plate', tasksDetail.vehicleLicensePlate),
+                  _buildDetailRow('Vehicle Model', tasksDetail.vehicleModel),
+                  _buildDetailRow('Creator ID', tasksDetail.creatorId.toString()),
+                  SizedBox(height: 16.0),
+                  _buildImageSection('Image Before', tasksDetail.imageBefore),
+                  _buildImageSection('Image After', tasksDetail.imageAfter),
+                ],
+              ),
+            );
+          }
+        },
       ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70, fontSize: 20)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70, fontSize: 20)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageSection(String title, Uint8List image) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title,  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white70, fontSize: 20)),
+        SizedBox(height: 8.0),
+        image.isNotEmpty
+            ? Image.memory(
+          image,
+          height: 200,
+          width: 200,
+          fit: BoxFit.cover,
+        )
+            : const Text('No image available', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70, fontSize: 20)),
+        SizedBox(height: 16.0),
+      ],
     );
   }
 }

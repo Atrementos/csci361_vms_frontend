@@ -18,7 +18,14 @@ class UpdateAssignmentPage extends ConsumerStatefulWidget {
 
 class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
   final formKey = GlobalKey<FormState>();
+  List<MaintenanceAssignment> allResults = [];
   List<MaintenanceAssignment> searchResults = [];
+  TextEditingController searchController = TextEditingController();
+
+  // Define the allowed task statuses
+  static const List<String> ALLOWED_TASK_STATUS = ["Requested", "Complete"];
+  String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYWRpLnR1cmd1bm92QG51LmVkdS5reiIsImV4cCI6MTcwMTE5MzIwNH0.IXyt9_g5mangj9Px00fREGPTmkO6zXmCWV9qle2RyVg';
 
   @override
   void initState() {
@@ -30,6 +37,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
     try {
       final results = await fetchAllMaintenanceJobs();
       setState(() {
+        allResults = results;
         searchResults = results;
       });
     } catch (error) {
@@ -44,7 +52,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
         Uri.http('vms-api.madi-wka.xyz', '/maintenancejob/'),
         headers: {
           HttpHeaders.authorizationHeader:
-              'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
         },
       );
       print('Response status: ${response.statusCode}');
@@ -52,7 +60,6 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        // Assuming your API response directly returns a list of maintenance jobs
         return data.map((json) {
           return MaintenanceAssignment.fromJson(json);
         }).toList();
@@ -64,6 +71,71 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
       print('Error fetching maintenance jobs: $error');
       throw Exception('Failed to load maintenance jobs');
     }
+  }
+
+  Future<void> _updateMaintenanceStatus(
+      MaintenanceAssignment assignment, String completed) async {
+    try {
+      print('Maintenance ID: ${assignment.id}');
+      print('Status: $completed');
+
+      // Check if the selected status is valid
+      if (ALLOWED_TASK_STATUS.contains(completed) && completed == 'Complete') {
+        final Uri url = Uri.http(
+          'vms-api.madi-wka.xyz',
+          '/maintenancejob/${assignment.id}',
+          {'status': completed}, // Include status as a query parameter
+        );
+
+        final Map<String, String> headers = {
+          HttpHeaders.authorizationHeader:
+          'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+          'Content-Type': 'application/json',
+        };
+
+        final http.Response response = await http.patch(
+          url,
+          headers: headers,
+        );
+
+        print('Request URL: $url');
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
+
+        if (response.statusCode == 200) {
+          // Update the local state after a successful update
+          setState(() {
+            assignment.status = completed;
+          });
+        } else {
+          throw Exception(
+              'Failed to update completed status. Status Code: ${response.statusCode}');
+        }
+      } else {
+        print('Invalid status: $completed');
+      }
+    } catch (error) {
+      print('Error updating completed status: $error');
+      throw Exception('Failed to update completed status');
+    }
+  }
+
+  void _filterResults(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        searchResults = allResults;
+      });
+      return;
+    }
+
+    setState(() {
+      searchResults = searchResults.where((assignment) {
+        return assignment.vehicle?.licensePlate
+            ?.toLowerCase()
+            .contains(query.toLowerCase()) ??
+            false;
+      }).toList();
+    });
   }
 
   @override
@@ -79,9 +151,17 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
             padding: const EdgeInsets.all(12),
             child: Form(
               key: formKey,
-              child: const Column(
+              child: Column(
                 children: [
-                  // Your form fields go here if needed
+                  TextFormField(
+                    controller: searchController,
+                    onChanged: _filterResults,
+                    decoration: InputDecoration(
+                      labelText: 'Search by License Plate',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                  // Other form fields go here if needed
                 ],
               ),
             ),
@@ -111,11 +191,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           alignment: Alignment.center,
                           child: Text(
                             searchResults[index].vehicle != null
-                                ? searchResults[index]
-                                        .vehicle!
-                                        .id
-                                        ?.toString() ??
-                                    'N/A'
+                                ? 'License Plate: ${searchResults[index].vehicle!.licensePlate ?? 'N/A'}'
                                 : 'N/A',
                           ),
                         ),
@@ -134,24 +210,30 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           alignment: Alignment.center,
                           child: Text('Completed: '),
                         ),
-                        DropdownButton<bool>(
-                          value: searchResults[index].completed,
+                        DropdownButton<String>(
+                          value: ALLOWED_TASK_STATUS.contains(
+                              searchResults[index].status)
+                              ? searchResults[index].status
+                              : 'Requested', // Provide a default value or handle null
                           onChanged: (value) {
-                            // Update the completed status when the dropdown value changes
-                            setState(() {
-                              searchResults[index].completed = value ?? false;
-                            });
+                            if (ALLOWED_TASK_STATUS.contains(value)) {
+                              _updateMaintenanceStatus(
+                                  searchResults[index], value ?? 'Requested');
+                            } else {
+                              print('Invalid status: $value');
+                            }
                           },
-                          items: const [
-                            DropdownMenuItem<bool>(
-                              value: true,
-                              child: Text('Yes'),
-                            ),
-                            DropdownMenuItem<bool>(
-                              value: false,
-                              child: Text('No'),
-                            ),
-                          ],
+                          items: ALLOWED_TASK_STATUS.map((status) {
+                            return DropdownMenuItem<String>(
+                              value: status,
+                              child: Text(status),
+                            );
+                          }).toList(),
+                          selectedItemBuilder: (context) {
+                            return ALLOWED_TASK_STATUS.map<Widget>((status) {
+                              return Text(status);
+                            }).toList();
+                          },
                         ),
                       ],
                     ),

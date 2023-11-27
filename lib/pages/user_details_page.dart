@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:csci361_vms_frontend/models/driver_assignment.dart';
 import 'package:csci361_vms_frontend/pages/create_drive_task_page.dart';
 import 'package:csci361_vms_frontend/pages/report_driver_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
@@ -25,6 +26,7 @@ class UserDetailsPage extends ConsumerStatefulWidget {
 
 class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
   Map<String, dynamic>? userInfo;
+  var driveTasks = [];
   final formKey = GlobalKey<FormState>();
   bool isAdmin = false;
   bool editMode = false;
@@ -61,6 +63,28 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
       email = userInfo!['Email'];
       role = userInfo!['Role'];
       governmentId = userInfo!['GovernmentId'];
+    });
+    if (role == 'Driver') {
+      loadDriveTasks();
+    }
+  }
+
+  void loadDriveTasks() async {
+    final url =
+        Uri.http('vms-api.madi-wka.xyz', '/task/driver/${widget.userId}');
+    final response = await http.get(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader:
+            'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+      },
+    );
+    final List<dynamic> decodedResponse = json.decode(response.body);
+    setState(() {
+      driveTasks = decodedResponse
+          .where((task) =>
+              task['Status'] == 'Pending' || task['Status'] == 'In progress')
+          .toList();
     });
   }
 
@@ -143,231 +167,284 @@ class _UserDetailsPageState extends ConsumerState<UserDetailsPage> {
         child: CircularProgressIndicator(),
       );
     } else {
-      mainContent = Container(
-        alignment: Alignment.topCenter,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: firstName,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                                return 'Incorrect last name format';
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              firstName = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('First Name'),
-                            ),
+      mainContent = Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: firstName,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                              return 'Incorrect last name format';
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            firstName = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('First Name'),
                           ),
                         ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: lastName,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                                return 'Incorrect last name format';
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              lastName = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Last Name'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: contactNumber,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !RegExp(r'^[\+]?[\d]{6,16}$')
-                                      .hasMatch(value)) {
-                                return 'Incorrect phone number format';
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              contactNumber = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Contact Number'),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: middleName,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                                return null;
-                              }
-                              return 'Incorrect middle name format';
-                            },
-                            onSaved: (newValue) {
-                              middleName = newValue;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Middle Name'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: password,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$')
-                                      .hasMatch(value)) {
-                                return 'Incorrect password format';
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              password = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Password'),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: email,
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                      .hasMatch(value)) {
-                                return 'Incorrect email format';
-                              }
-                              return null;
-                            },
-                            onSaved: (newValue) {
-                              email = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Email'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: address,
-                            maxLength: 60,
-                            onSaved: (newValue) {
-                              address = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Address'),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: TextFormField(
-                            readOnly: editMode ? false : true,
-                            initialValue: governmentId,
-                            maxLength: 20,
-                            onSaved: (newValue) {
-                              governmentId = newValue!;
-                            },
-                            decoration: const InputDecoration(
-                              label: Text('Government ID'),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (editMode)
+                      ),
                       const SizedBox(
-                        height: 12,
+                        width: 12,
                       ),
-                    if (editMode)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                editMode = false;
-                                formKey.currentState!.reset();
-                              });
-                            },
-                            child: const Text('Cancel'),
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: lastName,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                              return 'Incorrect last name format';
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            lastName = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Last Name'),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              updateUserInfo();
-                            },
-                            child: const Text('Save'),
-                          ),
-                        ],
+                        ),
                       ),
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: contactNumber,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !RegExp(r'^[\+]?[\d]{6,16}$').hasMatch(value)) {
+                              return 'Incorrect phone number format';
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            contactNumber = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Contact Number'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: middleName,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                              return null;
+                            }
+                            return 'Incorrect middle name format';
+                          },
+                          onSaved: (newValue) {
+                            middleName = newValue;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Middle Name'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: password,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$')
+                                    .hasMatch(value)) {
+                              return 'Incorrect password format';
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            password = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Password'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: email,
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                    .hasMatch(value)) {
+                              return 'Incorrect email format';
+                            }
+                            return null;
+                          },
+                          onSaved: (newValue) {
+                            email = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Email'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: address,
+                          maxLength: 60,
+                          onSaved: (newValue) {
+                            address = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Address'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          readOnly: editMode ? false : true,
+                          initialValue: governmentId,
+                          maxLength: 20,
+                          onSaved: (newValue) {
+                            governmentId = newValue!;
+                          },
+                          decoration: const InputDecoration(
+                            label: Text('Government ID'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (editMode)
+                    const SizedBox(
+                      height: 12,
+                    ),
+                  if (editMode)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              editMode = false;
+                              formKey.currentState!.reset();
+                            });
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            updateUserInfo();
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          if (role == 'Driver')
+            driveTasks.isEmpty
+                ? Card(
+                    child: Card(
+                      child: Text(
+                        'No assignments',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer),
+                      ),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: driveTasks.length,
+                      itemBuilder: (ctx, index) {
+                        return Card(
+                          margin: const EdgeInsets.all(8),
+                          child: ListTile(
+                            title: Text(
+                              'Description: ${driveTasks[index]['Description']}',
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                children: [
+                                  Text(
+                                      'Start Location: ${driveTasks[index]['StartLocation']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'End Location: ${driveTasks[index]['EndLocation']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'Distance Covered: ${driveTasks[index]['DistanceCovered']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text('Status: ${driveTasks[index]['Status']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'Start DateTime: ${driveTasks[index]['StartDateTime']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                  Text(
+                                      'End DateTime: ${driveTasks[index]['EndDateTime']}',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.white70)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+        ],
       );
     }
 

@@ -3,7 +3,7 @@ class DriverAssignment {
   final String description;
   final List<dynamic> startLocation;
   final List<dynamic> endLocation;
-  final int? distanceCovered;
+  double? distanceCovered;
   String status;
   final String? startDateTime;
   final String? endDateTime;

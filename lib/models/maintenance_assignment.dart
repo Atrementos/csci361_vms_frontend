@@ -6,7 +6,7 @@ class MaintenanceAssignment {
   final double totalCost;
   final Vehicle? vehicle;
   final Assignee? assignedTo;
-  bool completed = false;
+  String? status;
 
   MaintenanceAssignment({
     required this.id,
@@ -16,7 +16,7 @@ class MaintenanceAssignment {
     required this.totalCost,
     required this.vehicle,
     required this.assignedTo,
-    required this.completed,
+    required this.status,
   });
 
   factory MaintenanceAssignment.fromJson(Map<String, dynamic> json) {
@@ -29,7 +29,8 @@ class MaintenanceAssignment {
           ?.map((part) => CarPart.fromJson(part))
           .toList() ?? [],
       totalCost: json['TotalCost']?.toDouble() ?? 0.0,
-      completed: json['Status'] == 'Completed',
+      status: json['Status'] != 'Requested' ? json['Status'] : 'Requested',
+
       assignedTo: json['AssignedTo'] != null ? Assignee.fromJson(json['AssignedTo']) : null,
     );
   }

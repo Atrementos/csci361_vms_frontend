@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/pages/vehicle_details_page.dart';
+import 'package:csci361_vms_frontend/pages/vehicle_for_maintenance_page.dart';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:csci361_vms_frontend/pages/map_page.dart';
@@ -293,9 +294,10 @@ class _VehiclesPageState extends ConsumerState<VehiclesPage> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (ctx) {
-                                    return VehicleDetailsPage(
+                                    return ref.read(userRole.roleProvider) == 'Admin'
+                                    ? VehicleDetailsPage(
                                       vehicleId: vehicles[index].vehicleId,
-                                    );
+                                    ) : VehicleForMaintenancePage(vehicleId: vehicles[index].vehicleId,);
                                   },
                                 ),
                               );
