@@ -8,10 +8,10 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-
 class MaintenanceAssignmentPage extends ConsumerStatefulWidget {
   final MaintenanceAssignment maintenanceAssignment;
-  const MaintenanceAssignmentPage({super.key,required this.maintenanceAssignment});
+  const MaintenanceAssignmentPage(
+      {super.key, required this.maintenanceAssignment});
 
   @override
   ConsumerState<MaintenanceAssignmentPage> createState() {
@@ -19,7 +19,8 @@ class MaintenanceAssignmentPage extends ConsumerStatefulWidget {
   }
 }
 
-class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmentPage> {
+class _MaintenanceAssignmentPageState
+    extends ConsumerState<MaintenanceAssignmentPage> {
   @override
   void initState() {
     // TODO: implement initState
@@ -46,29 +47,29 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
     });
   }
 
-
   void _uploadParts() async {
     // Once the image is uploaded successfully, fetch CarPartsList
     final carPartsResponse = await http.get(
-      Uri.parse('http://vms-api.madi-wka.xyz/maintenancejob/${widget.maintenanceAssignment.id}'),
+      Uri.parse(
+          'http://vms-api.madi-wka.xyz/maintenancejob/${widget.maintenanceAssignment.id}'),
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer ${ref.read(
-            jwt.jwtTokenProvider)}"
+        HttpHeaders.authorizationHeader:
+            "Bearer ${ref.read(jwt.jwtTokenProvider)}"
       },
     );
 
     if (carPartsResponse.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(carPartsResponse.body)['CarPartsList'];
+      final List<dynamic> data =
+          jsonDecode(carPartsResponse.body)['CarPartsList'];
       setState(() {
         _carParts = data
-            .map<Map<String, dynamic>>((part) =>
-        {
-          'name': part['Name'],
-          'number': part['Number'],
-          'condition': part['Condition'],
-          'cost': part['Cost'].toString(),
-          'photo': base64Decode(part['image']), // Decode base64 image
-        })
+            .map<Map<String, dynamic>>((part) => {
+                  'name': part['Name'],
+                  'number': part['Number'],
+                  'condition': part['Condition'],
+                  'cost': part['Cost'].toString(),
+                  'photo': base64Decode(part['image']), // Decode base64 image
+                })
             .toList();
       });
     }
@@ -86,8 +87,10 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
       'POST',
       Uri.http('vms-api.madi-wka.xyz', 'maintenancejob/carpart', carPart),
     );
-    request.headers.addAll({HttpHeaders.authorizationHeader:
-    "Bearer ${ref.read(jwt.jwtTokenProvider)}"});
+    request.headers.addAll({
+      HttpHeaders.authorizationHeader:
+          "Bearer ${ref.read(jwt.jwtTokenProvider)}"
+    });
 
     request.files.add(
       await http.MultipartFile.fromPath(
@@ -212,22 +215,21 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
             ),
             _selectedImage != null
                 ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(
-                  //to show image, you type like this.
-                  File(_selectedImage!.path),
-                  fit: BoxFit.cover,
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: 300,
-                ),
-              ),
-            )
-                : const SizedBox(height: 10,),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        //to show image, you type like this.
+                        File(_selectedImage!.path),
+                        fit: BoxFit.cover,
+                        width: MediaQuery.of(context).size.width,
+                        height: 300,
+                      ),
+                    ),
+                  )
+                : const SizedBox(
+                    height: 10,
+                  ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -255,9 +257,13 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
               height: 12,
             ),
             Container(
-              child: const Text("Uploaded Car Parts",
-                style: TextStyle(color: Colors.white,
-                    fontSize: 20, fontWeight: FontWeight.bold), ),
+              child: const Text(
+                "Uploaded Car Parts",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -274,24 +280,41 @@ class _MaintenanceAssignmentPageState extends ConsumerState<MaintenanceAssignmen
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Car Part Name:   ${_carParts[index]['name']}',
-                        style: const TextStyle(color: Colors.white,
-                            fontSize: 15, fontWeight: FontWeight.w300),),
-                      Text('Car Part Number:  ${_carParts[index]['number']}',
-                        style: const TextStyle(color: Colors.white,
-                            fontSize: 15, fontWeight: FontWeight.w300),),
-                      Text('Car Part Cost:   ${_carParts[index]['cost']}',
-                        style: const TextStyle(color: Colors.white,
-                            fontSize: 15, fontWeight: FontWeight.w300),),
-                      Text('Car Part Condition:   ${_carParts[index]['condition']}',
-                        style: const TextStyle(color: Colors.white,
-                            fontSize: 15, fontWeight: FontWeight.w300),),
+                      Text(
+                        'Car Part Name:   ${_carParts[index]['name']}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      Text(
+                        'Car Part Number:  ${_carParts[index]['number']}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      Text(
+                        'Car Part Cost:   ${_carParts[index]['cost']}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w300),
+                      ),
+                      Text(
+                        'Car Part Condition:   ${_carParts[index]['condition']}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w300),
+                      ),
                       if (_carParts[index]['photo'] != null)
                         Image.memory(_carParts[index]['photo']!),
                     ],
                   ),
                 );
-              },),
+              },
+            ),
           ],
         ),
       ),

@@ -1,18 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:csci361_vms_frontend/models/vehicle.dart';
-import 'package:csci361_vms_frontend/widgets/admin_drawer.dart';
-import 'package:csci361_vms_frontend/widgets/fueling_person_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 class FuelingDetailsPage extends ConsumerStatefulWidget {
-  int vehicleId;
+  final int vehicleId;
 
-  FuelingDetailsPage({Key? key, required this.vehicleId}) : super(key: key);
+  const FuelingDetailsPage({Key? key, required this.vehicleId})
+      : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -31,6 +29,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
   String _gasStationName = "";
   File? _beforeImage;
   File? _afterImage;
+  bool datePicked = false;
 
   // Add controllers for the editable fields
   TextEditingController fuelAmountController = TextEditingController();
@@ -127,6 +126,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
         selectedDate = picked;
         _date =
             '${intFixed(picked.year, 4)}-${intFixed(picked.month, 2)}-${intFixed(picked.day, 2)}T${intFixed(picked.hour, 2)}:${intFixed(picked.minute, 2)}:${intFixed(picked.second, 2)}.${intFixed(picked.millisecond, 3)}Z';
+        datePicked = true;
       });
     }
   }
@@ -143,29 +143,34 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
         'FuelRefilled': _fuelRefilled,
         'GasStationName': _gasStationName,
       };
-
-      final Map<String, dynamic> queryBody = {
-        'ImageBefore': _beforeImage?.path,
-        'ImageAfter': _afterImage?.path,
-      };
-
-      final url = Uri.http('vms-api.madi-wka.xyz', '/fuel/', queryParams);
-      var response =
-          await http.post(url, body: jsonEncode(queryBody), headers: {
+      final request = http.MultipartRequest(
+          'POST', Uri.http('vms-api.madi-wka.xyz', '/fuel/', queryParams));
+      request.headers.addAll({
         'Authorization': "Bearer $token",
-        "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',
-        'Accept': '*/*',
       });
+      request.files.add(
+          await http.MultipartFile.fromPath('ImageBefore', _beforeImage!.path));
+      request.files.add(
+          await http.MultipartFile.fromPath('ImageAfter', _afterImage!.path));
+
+      final response = await request.send();
+      var responseData = await http.Response.fromStream(response);
       print(response.statusCode);
-      print(response.body);
+      print(responseData.body);
+
       if (response.statusCode == 201) {
-        print('Fuel task added successfully.');
         if (context.mounted) {
           Navigator.of(context).pop();
         }
       } else {
-        print('Fuel task was not added.');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Fueling task creation failed.'),
+            ),
+          );
+        }
       }
     }
   }
@@ -243,7 +248,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                       text: "${selectedDate.toLocal()}".split(' ')[
                           0]), // Use a controller to display the selected date
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (datePicked == false) {
                       return 'Please select a date';
                     }
                     return null;
