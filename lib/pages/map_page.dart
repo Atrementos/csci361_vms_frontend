@@ -63,7 +63,7 @@ class _MapPageState extends State<MapPage> {
           return Marker(
             markerId: MarkerId(vehicle.vehicleId.toString()),
             position: vehicle.currentLocation.isEmpty
-                ? const LatLng(0, 0)
+                ? LatLng(double.parse("0.00"), double.parse("0.00"))
                 : LatLng(
                     double.parse(vehicle.currentLocation.elementAt(0)),
                     double.parse(vehicle.currentLocation.elementAt(1)),

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
+import 'package:intl/intl.dart';
 
 class UpdateAssignmentPage extends ConsumerStatefulWidget {
   const UpdateAssignmentPage({Key? key}) : super(key: key);
@@ -191,7 +192,7 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                           alignment: Alignment.center,
                           child: Text(
                             searchResults[index].vehicle != null
-                                ? 'License Plate: ${searchResults[index].vehicle!.licensePlate ?? 'N/A'}'
+                                ? searchResults[index].vehicle!.licensePlate
                                 : 'N/A',
                           ),
                         ),
@@ -199,7 +200,10 @@ class _UpdateAssignmentPageState extends ConsumerState<UpdateAssignmentPage> {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            searchResults[index].date.toString(),
+                            DateFormat("yyyy-mm-dd").format(
+                                searchResults[index].date == null
+                                    ? DateTime.now()
+                                    : searchResults[index].date!),
                           ),
                         ),
                       ],

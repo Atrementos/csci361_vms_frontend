@@ -33,6 +33,8 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
   Vehicle? currentVehicle;
   Map<String, dynamic>? vehicle;
 
+  String? maintenanceTaskDescription;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,47 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
     );
   }
 
+  void _addMaintenanceTask(String taskDescription) async {
+    final postBody = {
+      'Description': taskDescription,
+      'VehicleID': currentVehicle!.vehicleId,
+      'Date': DateTime.now().toIso8601String(),
+    };
+    final url = Uri.parse('http://vms-api.madi-wka.xyz/maintenancejob/');
+    if (kDebugMode) {
+      print(url);
+    }
+    final response = await http.post(
+      url,
+      body: json.encode(postBody),
+      headers: {
+        HttpHeaders.authorizationHeader:
+            'Bearer ${ref.read(jwt.jwtTokenProvider)}',
+        'Content-Type': 'application/json',
+      },
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (context.mounted) {
+        loadVehicleInfo();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Maintenance task added successfully!'),
+          ),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Failed to add maintenance task: ${response.body}  ${response.statusCode}'),
+          ),
+        );
+      }
+    }
+  }
+
   void loadVehicleInfo() async {
     final url =
         Uri.parse('http://vms-api.madi-wka.xyz/vehicle/${widget.vehicleId}');
@@ -62,6 +105,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
       currentVehicle = Vehicle.fromJson(decodedResponse);
     });
   }
+
   void viewVehicleOnMap() {
     Navigator.push(
       context,
@@ -144,12 +188,16 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vehicle Details'),
-        leading: ref.read(userRole.roleProvider) == 'Maintenance' ? TextButton(
-          child: Text("Back", style: TextStyle(color: Colors.white, fontSize: 12),),
-          onPressed: (){
-              Navigator.of(context).pop();
-            }
-        ) : null,
+        leading: ref.read(userRole.roleProvider) == 'Maintenance'
+            ? TextButton(
+                child: Text(
+                  "Back",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                })
+            : null,
       ),
       body: currentVehicle == null
           ? const Center(
@@ -259,7 +307,7 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                       Row(
                         children: [
                           Text(
-                            'Update current location of the vehicle:',
+                            'Location update:',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
@@ -299,6 +347,73 @@ class _VehicleDetailsPageState extends ConsumerState<VehicleDetailsPage> {
                             );
                           },
                           child: const Text('Assign a driver'),
+                        ),
+                  //if current role is admin create form to add a new maintenance task
+                  ref.read(userRole.roleProvider) == 'Admin'
+                      ? ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              useSafeArea: true,
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (ctx) => Form(
+                                key: formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    const Text(
+                                      'Add a new maintenance task',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    TextFormField(
+                                      decoration: const InputDecoration(
+                                        labelText: 'Task description',
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter a task name';
+                                        }
+                                        return null;
+                                      },
+                                      onSaved: (value) {
+                                        maintenanceTaskDescription = value;
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (formKey.currentState!.validate()) {
+                                          formKey.currentState!.save();
+                                          Navigator.pop(context);
+                                          _addMaintenanceTask(
+                                              maintenanceTaskDescription!);
+                                        }
+                                      },
+                                      child: const Text('Add task'),
+                                    ),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Add a new maintenance task'),
+                        )
+                      : const SizedBox(
+                          height: 0,
                         ),
                 ],
               ),

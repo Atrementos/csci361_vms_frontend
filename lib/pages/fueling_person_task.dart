@@ -4,7 +4,9 @@ import 'package:csci361_vms_frontend/models/vehicle.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:csci361_vms_frontend/providers/jwt_token_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class FuelingDetailsPage extends ConsumerStatefulWidget {
   final int vehicleId;
@@ -115,17 +117,28 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
   String intFixed(int n, int count) => n.toString().padLeft(count, "0");
 
   DateTime selectedDate = DateTime.now();
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(2015, 8),
         lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
+    final TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(selectedDate),
+    );
+    if (picked != null && picked != selectedDate && selectedTime != null) {
       setState(() {
-        selectedDate = picked;
-        _date =
-            '${intFixed(picked.year, 4)}-${intFixed(picked.month, 2)}-${intFixed(picked.day, 2)}T${intFixed(picked.hour, 2)}:${intFixed(picked.minute, 2)}:${intFixed(picked.second, 2)}.${intFixed(picked.millisecond, 3)}Z';
+        selectedDate = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+        // _date =
+        // '${intFixed(picked.year, 4)}-${intFixed(picked.month, 2)}-${intFixed(picked.day, 2)}T${intFixed(picked.hour, 2)}:${intFixed(picked.minute, 2)}:${intFixed(picked.second, 2)}.${intFixed(picked.millisecond, 3)}Z';
         datePicked = true;
       });
     }
@@ -138,7 +151,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
       final Map<String, dynamic> queryParams = {
         'VehicleId': widget.vehicleId.toString(),
         'Description': _description,
-        'Date': _date,
+        'Date': DateFormat("yyyy-MM-ddTHH:mm:ssZ").format(selectedDate),
         'Cost': _cost,
         'FuelRefilled': _fuelRefilled,
         'GasStationName': _gasStationName,
@@ -146,7 +159,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
       final request = http.MultipartRequest(
           'POST', Uri.http('vms-api.madi-wka.xyz', '/fuel/', queryParams));
       request.headers.addAll({
-        'Authorization': "Bearer $token",
+        'Authorization': "Bearer ${ref.read(jwt.jwtTokenProvider)}",
         'Content-Type': 'application/json',
       });
       request.files.add(
@@ -223,6 +236,7 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
+                // if on mobile show the following
                 Text(
                   'Fueling Task Details',
                   style: Theme.of(context).textTheme.headline6!.copyWith(
@@ -245,12 +259,9 @@ class _FuelingDetailsPageState extends ConsumerState<FuelingDetailsPage> {
                   onTap: () => _selectDate(
                       context), // Call the _selectDate method on tap
                   controller: TextEditingController(
-                      text: "${selectedDate.toLocal()}".split(' ')[
-                          0]), // Use a controller to display the selected date
+                      text: DateFormat("yyyy-MM-dd HH:mm").format(
+                          selectedDate)), // Use a controller to display the selected date
                   validator: (value) {
-                    if (datePicked == false) {
-                      return 'Please select a date';
-                    }
                     return null;
                   },
                 ),

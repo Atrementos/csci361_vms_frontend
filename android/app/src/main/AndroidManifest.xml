@@ -2,7 +2,7 @@
     <application
         android:label="csci361_vms_frontend"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyBSEPH2igl2OjZjwcTIJ_Ek7BcR2TfIDks"/>
